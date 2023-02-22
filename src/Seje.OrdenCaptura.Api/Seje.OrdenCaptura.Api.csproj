@@ -33,6 +33,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MementoFX.Messaging.Rebus\MementoFX.Messaging.Rebus.csproj" />
     <ProjectReference Include="..\MementoFX.Persistence.SqlServer\MementoFX.Persistence.SqlServer.csproj" />
+    <ProjectReference Include="..\Seje.Authorization.Service\Seje.Authorization.Service.csproj" />
     <ProjectReference Include="..\Seje.FileManager.Client\Seje.FileManager.Client.csproj" />
     <ProjectReference Include="..\Seje.Firma.Client\Seje.Firma.Client.csproj" />
     <ProjectReference Include="..\Seje.OrdenCaptura.QueryStack\Seje.OrdenCaptura.QueryStack.csproj" />

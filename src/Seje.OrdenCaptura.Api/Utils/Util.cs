@@ -8,7 +8,14 @@ namespace Seje.OrdenCaptura.Api.Utils
         public static string GetTemplate(string fileName,OrdenCapturaFormato formato,string nombreInstitucion,string qr,string logo)
         {
             string filePath = Path.Combine($"Templates/{fileName}");
-            string template = File.ReadAllText(filePath)
+
+            formato.ExpedienteDetalle.Delitos = string.IsNullOrEmpty(formato.ExpedienteDetalle.Delitos) ? "N/D" : formato.ExpedienteDetalle.Delitos;
+            formato.ExpedienteDetalle.Delitos.Replace("null", "N/D");
+
+            formato.ExpedienteDetalle.Victimas = string.IsNullOrEmpty(formato.ExpedienteDetalle.Victimas) ? "N/D" : formato.ExpedienteDetalle.Victimas;
+            formato.ExpedienteDetalle.Victimas.Replace("null", "N/D");
+
+            string template = File.ReadAllText(filePath)   
             .Replace("$NumeroExpediente$", formato.NumeroExpediente)
             .Replace("$NumeroOrdenCaptura$", formato.NumeroOrdenCaptura)
             .Replace("$DespachoSala$", formato.Numerojuez)

@@ -9,7 +9,7 @@ namespace Seje.OrdenCaptura.Api.Infrastructure.Interfaces
     public interface IOrdenCaptura
     {
         Task<Result<List<OrdenCaptura>>> List();
-        Task<PagedResult<OrdenCaptura>> List(FiltrosOrdenCaptura filtros);
+        Task<PagedResult<OrdenCaptura>> List(FiltrosOrdenCaptura filtros,string userName);
         Task<Result<OrdenCaptura>> GetById(long ordenCapturaId);
         Task<Result<List<OrdenCaptura>>> GetByFilter(FiltrosOrdenCaptura filtros);
         Task<Result<OrdenCaptura>> Create(RegistrarOrdenCaptura model, string userName);

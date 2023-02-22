@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using QRCoder;
+using Seje.Authorization.Service;
+using Seje.Authorization.Service.Models;
 using Seje.FileManager.Client;
 using Seje.Firma.Client;
 using Seje.OrdenCaptura.Api.Infrastructure.Interfaces;
@@ -29,18 +31,21 @@ namespace Seje.OrdenCaptura.Api.Services
     public class OrdenCapturaService : IOrdenCaptura
     {
         private readonly IMapper _mapper;
+        private readonly ITipoFirma _tipoFirmaService;
+        private readonly IDocumento _documentoService;
         private readonly ILogger<OrdenCapturaService> _logger;
-        public IMediator Mediator { get; }
-        public IRepository<QueryStack.OrdenCaptura> Repository { get; }
-        public IRepository<QueryStack.Firma> FirmaRepository { get; }
         private readonly IFirmaDigitalClient _firmaDigitalClient;
         private readonly IFileManagerClient _fileManagerClient;
-        private readonly IDocumento _documentoService;
-        private readonly ITipoFirma _tipoFirmaService;
+        private readonly IAuthorizationService _authorizationService;
         public int OrganoJurisdiccional { get; set; }
-        public IConfiguration _configuration { get; }
         public const string SystemName = "FileManagerSettings:SystemName";
-        public const string LOCAL_FILE_PATH = "LocalFilePath";
+        public const string Component = "AuthorizationSettings:Component";
+        public const string LocalFilePath = "LocalFilePath";
+        public IMediator Mediator { get; }
+        public IRepository<QueryStack.Firma> FirmaRepository { get; }
+        public IRepository<QueryStack.OrdenCaptura> Repository { get; }
+        public IConfiguration _configuration { get; }
+        
 
         public OrdenCapturaService(
         IMapper mapper,
@@ -51,6 +56,7 @@ namespace Seje.OrdenCaptura.Api.Services
         IHttpContextAccessor httpContextAccessor,
         IFirmaDigitalClient firmaDigitalClient,
         IFileManagerClient fileManagerClient,
+        IAuthorizationService authorizationService,
         IDocumento documentoService,
         ITipoFirma tipoFirmaService,
         IConfiguration configuration
@@ -66,6 +72,7 @@ namespace Seje.OrdenCaptura.Api.Services
             _firmaDigitalClient = firmaDigitalClient;
             _documentoService = documentoService;
             _fileManagerClient = fileManagerClient;
+            _authorizationService = authorizationService;
             _tipoFirmaService = tipoFirmaService;
             _configuration = configuration;
         }
@@ -77,8 +84,10 @@ namespace Seje.OrdenCaptura.Api.Services
             return result;
         }
 
-        public async Task<PagedResult<OrdenCaptura>> List(FiltrosOrdenCaptura filtros)
+        public async Task<PagedResult<OrdenCaptura>> List(FiltrosOrdenCaptura filtros, string userName)
         {
+            var permisos = await _authorizationService.GetPermissionsBy(userName, _configuration.GetValue<string>(Component));
+            
             PagedResult<OrdenCaptura> response = new();
 
             if (OrganoJurisdiccional == 0) return response;
@@ -88,12 +97,14 @@ namespace Seje.OrdenCaptura.Api.Services
             var ct = new CancellationTokenSource();
             ct.CancelAfter(TimeSpan.FromSeconds(60));
 
-            var ordenes = await Repository.ListAsync(new OrdenCapturaPaginationSpec(filtros), ct.Token);
+            var ordenes = await Repository.ListAsync(new OrdenCapturaSpec(filtros), ct.Token);
+            ordenes = FiltrarPorPermisos(ordenes,permisos);
+            response.TotalCount = ordenes.Count();
 
-            var total = await Repository.ListAsync(new OrdenCapturaSpec(filtros));
-            response.TotalCount = total.Count();
+            var skip = (filtros.PageNumber - 1) * filtros.PageSize;
+            var take = filtros.PageSize;
 
-            response.Result = _mapper.Map<List<OrdenCaptura>>(ordenes.OrderByDescending(x => x.OrdenCapturaId));
+            response.Result = _mapper.Map<List<OrdenCaptura>>(ordenes.Skip(skip).Take(take));
             response.PageNumber = filtros.PageNumber;
             response.PageSize = filtros.PageSize;
             return response;
@@ -147,14 +158,16 @@ namespace Seje.OrdenCaptura.Api.Services
                 var ct = new CancellationTokenSource();
                 ct.CancelAfter(TimeSpan.FromSeconds(60));
 
-                var ordenCaptura = await Repository.GetBySpecAsync(new OrdenCapturaSpec(new FiltrosOrdenCaptura
+                var ordenesCaptura = await Repository.ListAsync(new OrdenCapturaSpec(new FiltrosOrdenCaptura
                 {
                      NumeroExpediente = model.NumeroExpediente,
                 }), ct.Token);
 
-                if (ordenCaptura != null)
+                var ordenCapturaVigente = ordenesCaptura.Where(x => x.OrdenCapturaEstadoId != (int)OrdenCapturaEstados.Finalizada).ToList();
+
+                if (ordenCapturaVigente.Any())
                 {
-                    result.Message = "Ya existe una orden de captura con la información proporcionada";
+                    result.Message = $"Existe una orden de captura vigente para el expediente: {model.NumeroExpediente}";
                     result.Success = false;
                     return result;
                 }
@@ -317,8 +330,6 @@ namespace Seje.OrdenCaptura.Api.Services
                         {"EmitidaPor", formato.Juzgado}
                     }, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-                    //string qrData = $"Numero Orden Captura:{formato.NumeroOrdenCaptura},Nombre Del Imputado:{formato.ExpedienteDetalle.NombreImputado},Victimas:{formato.ExpedienteDetalle.Victimas},Delitos:{formato.ExpedienteDetalle.Delitos},Emitida Por:{formato.Juzgado},Fecha de emisión:{formato.FechaEmision}";
-
                     var qr = GenerarQR(qrData);
                     string logo = ObtenerLogo();
 
@@ -457,6 +468,7 @@ namespace Seje.OrdenCaptura.Api.Services
             }
 
         }
+        
         private async Task<List<OrdenCapturaPDF>> ObtenerDocumentos(List<OrdenCapturaPDF> documentos,FirmaRequest model)
         {
             var documentosEntidad = await _documentoService.GetByFilter(new FiltrosDocumento
@@ -475,12 +487,12 @@ namespace Seje.OrdenCaptura.Api.Services
             }
             return documentos;
         }
-
+        
         private void EscribirDocumentoLocal(OrdenCapturaPDF doc, string numeroOrdenCaptura)
         {
             if (!string.IsNullOrWhiteSpace(doc.PdfBase64))
             {
-                string directory = Path.Combine(_configuration.GetValue<string>(LOCAL_FILE_PATH), $"{numeroOrdenCaptura}");
+                string directory = Path.Combine(_configuration.GetValue<string>(LocalFilePath), $"{numeroOrdenCaptura}");
                 doc.FilePath = Path.Combine(directory, doc.FileName);
                 Directory.CreateDirectory(directory);
                 File.WriteAllBytes(doc.FilePath, Convert.FromBase64String(doc.PdfBase64));
@@ -489,12 +501,12 @@ namespace Seje.OrdenCaptura.Api.Services
 
         private void EliminarDirectorioLocal(string numeroOrdenCaptura)
         {
-            string directory = Path.Combine(_configuration.GetValue<string>(LOCAL_FILE_PATH), $"{numeroOrdenCaptura}");
+            string directory = Path.Combine(_configuration.GetValue<string>(LocalFilePath), $"{numeroOrdenCaptura}");
             if (Directory.Exists(directory))
                 Directory.Delete(directory, true);
         }
 
-        private string GenerarQR(string secureQRCode)
+        private static string GenerarQR(string secureQRCode)
         {
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(secureQRCode, QRCodeGenerator.ECCLevel.Q);
@@ -503,7 +515,7 @@ namespace Seje.OrdenCaptura.Api.Services
             return new Base64QRCode(qrCodeData).GetGraphic(20);
         }
 
-        private string ObtenerLogo()
+        private static string ObtenerLogo()
         {
             string logo = string.Empty;
             string logoUrl = "Templates/images/logo2.png";
@@ -519,5 +531,15 @@ namespace Seje.OrdenCaptura.Api.Services
             return logo;
         }
 
+        private static List<QueryStack.OrdenCaptura> FiltrarPorPermisos(List<QueryStack.OrdenCaptura> ordenes,List<Permission> permisos)
+        {
+            List<QueryStack.OrdenCaptura> ordenesFiltradas = new();
+            foreach (var permiso in permisos)
+            {
+                ordenesFiltradas.AddRange(ordenes?.Where(x => x.OrdenCapturaEstadoDescripcion == permiso.Name).Select(x => x).ToList());
+            }
+            ordenesFiltradas = ordenesFiltradas.OrderByDescending(x => x.OrdenCapturaId).ToList();
+            return ordenesFiltradas;
+        }
     }
 }

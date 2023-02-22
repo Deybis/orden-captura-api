@@ -32,6 +32,7 @@ namespace Seje.OrdenCaptura.Api
             services.AddControllers(config =>
             {
                 config.Filters.Add(new AuthorizeFilter());
+                //config.Filters.Add(typeof(Authorization.Service.Filters.PermissionFilter));
             });
             services.AddSignalR();
             services.AddCors(options =>

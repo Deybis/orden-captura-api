@@ -1,6 +1,8 @@
 ﻿using Ardalis.Specification;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Seje.OrdenCaptura.Api.Models
 {
@@ -48,6 +50,15 @@ namespace Seje.OrdenCaptura.Api.Models
             var take = filtro.PageSize;
 
             Query.Skip(skip).Take(take);
+
+            //Dictionary<string, string> query = new Dictionary<string, string>();
+            //Type type = filtro.GetType();
+            //PropertyInfo[] properties = type.GetProperties();
+
+            //foreach (PropertyInfo p in properties)
+            //{
+            //    var value = p.GetValue(filtro, null);
+            //}
         }
     }
 

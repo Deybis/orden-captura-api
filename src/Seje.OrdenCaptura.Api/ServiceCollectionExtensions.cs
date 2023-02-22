@@ -21,6 +21,8 @@ using System;
 using System.Net.Http;
 using System.Reflection;
 using Seje.FileManager.Client;
+using Seje.Authorization.Service;
+using Seje.OrdenCaptura.Api.Models;
 
 namespace Seje.OrdenCaptura.Api
 {
@@ -68,6 +70,20 @@ namespace Seje.OrdenCaptura.Api
             services.AddHandlersConfiguration();
             services.AddQueryStackConfiguration(configuration);
             services.AddHttpClientsConfiguration(configuration);
+            services.AddAuthorizationService(configuration);
+        }
+
+        private static void AddAuthorizationService(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddAuthorizationConfig(opts =>
+            {
+                var redisOpts = new Authorization.Service.Models.RedisConfiguration();
+                configuration.GetSection(AppSettings.REDIS_CONFIGURATION).Bind(redisOpts);
+
+                opts.Host = configuration.GetValue<string>(AppSettings.API_URL_AUTHORIZATION);
+                opts.Component = configuration.GetValue<string>(AppSettings.COMPONENT_AUTHORIZATION);
+                opts.RedisConfiguration = redisOpts;
+            });
         }
 
         private static void AddEventStoreConfiguration(this IServiceCollection services, IConfiguration configuration)

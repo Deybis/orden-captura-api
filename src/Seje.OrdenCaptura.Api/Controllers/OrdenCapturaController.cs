@@ -42,7 +42,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<PagedResult<OrdenCaptura>> List([FromQuery] FiltrosOrdenCaptura filtros)
         {
-            return await _ordenCapturaService.List(filtros);
+            return await _ordenCapturaService.List(filtros, UserName);
         }
 
         [HttpGet("{ordenCapturaId}")]
