@@ -54,6 +54,7 @@ namespace Seje.FileManager.Client
             }
             else
             {
+                logger.LogInformation("FileManagerClient:No se encontró el documento");
                 if (response.StatusCode != HttpStatusCode.NotFound)
                     response.EnsureSuccessStatusCode();
             }
@@ -65,29 +66,21 @@ namespace Seje.FileManager.Client
             var url = "/file/upload";
             try
             {
-                using (var form = new MultipartFormDataContent())
-                {
-                    using (var fs = File.OpenRead(model.FilePath))
-                    {
-                        using (var streamContent = new StreamContent(fs))
-                        {
-                            using (var fileContent = new ByteArrayContent(await streamContent.ReadAsByteArrayAsync()))
-                            {
-                                fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
-                                form.Add(fileContent, "file", model.FileName);
-                                StringContent jsonPart = new StringContent(JsonConvert.SerializeObject(model));
-                                form.Add(jsonPart, "model");
-                                HttpResponseMessage response = await httpClient.PostAsync(url, form);
-                                response.EnsureSuccessStatusCode();
-                                return response.IsSuccessStatusCode;
-                            }
-                        }
-                    }
-                }
+                using var form = new MultipartFormDataContent();
+                using var fs = File.OpenRead(model.FilePath);
+                using var streamContent = new StreamContent(fs);
+                using var fileContent = new ByteArrayContent(await streamContent.ReadAsByteArrayAsync());
+                fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
+                form.Add(fileContent, "file", model.FileName);
+                StringContent jsonPart = new(JsonConvert.SerializeObject(model));
+                form.Add(jsonPart, "model");
+                HttpResponseMessage response = await httpClient.PostAsync(url, form);
+                response.EnsureSuccessStatusCode();
+                return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
             {
-                logger.LogInformation("OrdenCaptura: " + ex.Message);
+                logger.LogInformation("FileManagerClient - UploadFile: " + ex.Message);
             }
             return false;
         }

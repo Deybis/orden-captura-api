@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using QRCoder;
 using Seje.Authorization.Service;
-using Seje.Authorization.Service.Models;
 using Seje.FileManager.Client;
 using Seje.Firma.Client;
 using Seje.OrdenCaptura.Api.Infrastructure.Interfaces;
@@ -17,7 +16,6 @@ using Seje.OrdenCaptura.Api.Utils;
 using Seje.OrdenCaptura.Api.Validator;
 using Seje.OrdenCaptura.QueryStack;
 using Seje.OrdenCaptura.SharedKernel.Results;
-using SelectPdf;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -25,6 +23,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using WkHtmlToPdfDotNet;
+using WkHtmlToPdfDotNet.Contracts;
 
 namespace Seje.OrdenCaptura.Api.Services
 {
@@ -37,15 +37,17 @@ namespace Seje.OrdenCaptura.Api.Services
         private readonly IFirmaDigitalClient _firmaDigitalClient;
         private readonly IFileManagerClient _fileManagerClient;
         private readonly IAuthorizationService _authorizationService;
+        public readonly IConverter _converter;
         public int OrganoJurisdiccional { get; set; }
         public const string SystemName = "FileManagerSettings:SystemName";
         public const string Component = "AuthorizationSettings:Component";
         public const string LocalFilePath = "LocalFilePath";
+        public const string LogoFilePath = "LogoFilePath";
         public IMediator Mediator { get; }
         public IRepository<QueryStack.Firma> FirmaRepository { get; }
         public IRepository<QueryStack.OrdenCaptura> Repository { get; }
         public IConfiguration _configuration { get; }
-        
+
 
         public OrdenCapturaService(
         IMapper mapper,
@@ -57,6 +59,7 @@ namespace Seje.OrdenCaptura.Api.Services
         IFirmaDigitalClient firmaDigitalClient,
         IFileManagerClient fileManagerClient,
         IAuthorizationService authorizationService,
+        IConverter converter,
         IDocumento documentoService,
         ITipoFirma tipoFirmaService,
         IConfiguration configuration
@@ -75,6 +78,7 @@ namespace Seje.OrdenCaptura.Api.Services
             _authorizationService = authorizationService;
             _tipoFirmaService = tipoFirmaService;
             _configuration = configuration;
+            _converter = converter;
         }
         public async Task<Result<List<OrdenCaptura>>> List()
         {
@@ -86,8 +90,6 @@ namespace Seje.OrdenCaptura.Api.Services
 
         public async Task<PagedResult<OrdenCaptura>> List(FiltrosOrdenCaptura filtros, string userName)
         {
-            var permisos = await _authorizationService.GetPermissionsBy(userName, _configuration.GetValue<string>(Component));
-            
             PagedResult<OrdenCaptura> response = new();
 
             if (OrganoJurisdiccional == 0) return response;
@@ -98,7 +100,7 @@ namespace Seje.OrdenCaptura.Api.Services
             ct.CancelAfter(TimeSpan.FromSeconds(60));
 
             var ordenes = await Repository.ListAsync(new OrdenCapturaSpec(filtros), ct.Token);
-            ordenes = FiltrarPorPermisos(ordenes,permisos);
+            ordenes = await FiltrarOrdenCapturaPermiso(ordenes, userName);
             response.TotalCount = ordenes.Count();
 
             var skip = (filtros.PageNumber - 1) * filtros.PageSize;
@@ -147,7 +149,6 @@ namespace Seje.OrdenCaptura.Api.Services
         public async Task<Result<OrdenCaptura>> Create(RegistrarOrdenCaptura model, string userName)
         {
             var result = new Result<OrdenCaptura>(false, null, new OrdenCaptura());
-            model.FechaEmision = DateTime.Now.ToString();
             try
             {
                 var validator = new RegistrarOrdenCapturaValidator();
@@ -160,7 +161,7 @@ namespace Seje.OrdenCaptura.Api.Services
 
                 var ordenesCaptura = await Repository.ListAsync(new OrdenCapturaSpec(new FiltrosOrdenCaptura
                 {
-                     NumeroExpediente = model.NumeroExpediente,
+                    NumeroExpediente = model.NumeroExpediente,
                 }), ct.Token);
 
                 var ordenCapturaVigente = ordenesCaptura.Where(x => x.OrdenCapturaEstadoId != (int)OrdenCapturaEstados.Finalizada).ToList();
@@ -175,8 +176,27 @@ namespace Seje.OrdenCaptura.Api.Services
                 var ordenCapturaEstadoId = (int)OrdenCapturaEstados.Borrador;
                 var ordenCapturaEstadoDescripcion = Enum.GetName(typeof(OrdenCapturaEstados), ordenCapturaEstadoId);
                 var ordenCapturaCodigo = Guid.NewGuid();
-
-                var command = new CommandStack.Commands.RegistrarOrdenCapturaCommand(0, model.OrganoJurisdiccionalId, ordenCapturaCodigo,model.NumeroOrdenCaptura,model.Correlativo, ordenCapturaEstadoId, ordenCapturaEstadoDescripcion,model.ExpedienteId,model.NumeroExpediente, model.InstanciaId, model.InstanciaDescripcion, model.CorreoSecretario, model.CorreoJuez, model.CorreoEscribiente,Convert.ToDateTime(model.FechaEmision),model.AlertaInternacional, userName);
+                var command = new CommandStack.Commands.RegistrarOrdenCapturaCommand(0,
+                    model.OrganoJurisdiccionalId,
+                    ordenCapturaCodigo,
+                    model.NumeroOrdenCaptura,
+                    model.Correlativo,
+                    ordenCapturaEstadoId,
+                    ordenCapturaEstadoDescripcion,
+                    model.ExpedienteId,
+                    model.NumeroExpediente,
+                    model.InstanciaId,
+                    model.InstanciaDescripcion,
+                    model.CorreoSecretario,
+                    model.CorreoJuez,
+                    model.CorreoEscribiente,
+                    Convert.ToDateTime(model.FechaEmision),
+                    model.AlertaInternacional,
+                    model.DepartamentoId,
+                    model.DepartamentoDescripcion,
+                    model.MunicipioId,
+                    model.MunicipioDescripcion,
+                    userName);
                 var create = await Mediator.Send(command);
                 result.Success = true;
 
@@ -201,7 +221,29 @@ namespace Seje.OrdenCaptura.Api.Services
                 if (!validation.IsValid)
                     return Result<OrdenCaptura>.Failure(validation.Errors.Select(e => e.ErrorMessage).FirstOrDefault());
 
-                var command = new CommandStack.Commands.ModificarOrdenCapturaCommand(model.OrdenCapturaId,model.OrganoJurisdiccionalId,model.OrdenCapturaCodigo,model.NumeroOrdenCaptura,model.Correlativo, model.OrdenCapturaEstadoId,model.OrdenCapturaEstadoDescripcion,model.ExpedienteId,model.NumeroExpediente, model.InstanciaId,model.InstanciaDescripcion,model.CorreoSecretario,model.CorreoJuez,model.CorreoEscribiente,Convert.ToDateTime(model.FechaEmision), Convert.ToDateTime(model.FechaEntrega),model.AlertaInternacional,userName);
+                var command = new CommandStack.Commands.ModificarOrdenCapturaCommand(model.OrdenCapturaId,
+                    model.OrganoJurisdiccionalId,
+                    model.OrdenCapturaCodigo,
+                    model.NumeroOrdenCaptura,
+                    model.Correlativo,
+                    model.OrdenCapturaEstadoId,
+                    model.OrdenCapturaEstadoDescripcion,
+                    model.ExpedienteId,
+                    model.NumeroExpediente,
+                    model.InstanciaId,
+                    model.InstanciaDescripcion,
+                    model.CorreoSecretario,
+                    model.CorreoJuez,
+                    model.CorreoEscribiente,
+                    Convert.ToDateTime(model.FechaEmision),
+                    Convert.ToDateTime(model.FechaEntrega),
+                    model.AlertaInternacional,
+                    model.DepartamentoId,
+                    model.DepartamentoDescripcion,
+                    model.MunicipioId,
+                    model.MunicipioDescripcion,
+                    model.Observaciones,
+                    userName);
                 await Mediator.Send(command);
 
                 result.Entity = _mapper.Map<OrdenCaptura>(model);
@@ -217,13 +259,13 @@ namespace Seje.OrdenCaptura.Api.Services
             }
         }
 
-        public async Task<Result<List<Firma>>> AgregarFirmas(string numeroOrdenCaptura, int numeroFirmas,string userName)
+        public async Task<Result<List<Firma>>> AgregarFirmas(string numeroOrdenCaptura, int numeroFirmas, string userName)
         {
             var result = new Result<List<Firma>>(false, null, new List<Firma>());
             try
             {
-                var orden = await Repository.GetBySpecAsync(new OrdenCapturaSpec(new FiltrosOrdenCaptura { NumeroOrdenCaptura = numeroOrdenCaptura}));
-                if(orden == null)
+                var orden = await Repository.GetBySpecAsync(new OrdenCapturaSpec(new FiltrosOrdenCaptura { NumeroOrdenCaptura = numeroOrdenCaptura }));
+                if (orden == null)
                 {
                     result.Success = false;
                     return result;
@@ -249,7 +291,7 @@ namespace Seje.OrdenCaptura.Api.Services
                     }
                 }
                 result.Success = true;
-                  
+
                 return result;
             }
             catch (Exception ex)
@@ -260,8 +302,9 @@ namespace Seje.OrdenCaptura.Api.Services
             }
         }
 
-        public async Task<Result<FirmaResponse>> Firmar(FirmaRequest model,string userName)
+        public async Task<Result<FirmaResponse>> Firmar(FirmaRequest model, string userName)
         {
+            _logger.LogInformation("Entró a firmar");
             var result = new Result<FirmaResponse>(false, null, new FirmaResponse());
             List<OrdenCapturaPDF> documentos = new List<OrdenCapturaPDF>();
             int firmasRealizadas = 0;
@@ -270,19 +313,19 @@ namespace Seje.OrdenCaptura.Api.Services
                 #region Generar/Obtener Documentos
                 var firmasOrdenCaptura = await FirmaRepository.ListAsync(new FirmaSpec(new FiltrosFirma
                 {
-                    TipoFirmaId = model.TipoFirma,NumeroOrdenCaptura = model.OrdenCapturaFormato.NumeroOrdenCaptura
+                    TipoFirmaId = model.TipoFirma,
+                    NumeroOrdenCaptura = model.OrdenCapturaFormato.NumeroOrdenCaptura
                 }));
                 firmasRealizadas = firmasOrdenCaptura?.Where(x => x.Firmo == true).Count() ?? 0;
 
-                if(firmasRealizadas == 0)                
-                    documentos = GenerarDocumentos(model.TipoDocumento, model.OrdenCapturaFormato);
-                else             
-                    documentos = await ObtenerDocumentos(documentos, model);
+                if (firmasRealizadas == 0) documentos = GenerarDocumentos(model.TipoDocumento, model.OrdenCapturaFormato);
+                else documentos = await ObtenerDocumentos(documentos, model);
                 #endregion
 
                 #region FirmarDocumentos
                 foreach (var doc in documentos)
                 {
+                    _logger.LogInformation($"Firmando documento: {doc.FileName}");
                     model.File = doc.PdfBase64;
                     result = await _firmaDigitalClient.Firmar(model);
                     doc.PdfBase64 = result.Entity.File; //--> Documento firmado
@@ -293,11 +336,11 @@ namespace Seje.OrdenCaptura.Api.Services
                 #region Guardar/Actualizar
                 if (result.Success)
                 {
-                    firmasRealizadas = firmasRealizadas + 1;
-                    bool firmasFinalizadas = firmasOrdenCaptura?.Count() == firmasRealizadas;
-                    await GuardarDocumentos(model, documentos, userName, firmasFinalizadas);
-                    await ActualizarFirma(firmasOrdenCaptura, model.UserName);
-                    await ActualizarEstadoOrdenCaptura(model.TipoFirma,firmasFinalizadas,model.OrdenCapturaFormato.NumeroOrdenCaptura, userName);
+                    firmasRealizadas++;
+                    bool firmasFinalizadas = firmasOrdenCaptura?.Count == firmasRealizadas;
+                    var documentResult = await GuardarDocumentos(model, documentos, userName, firmasFinalizadas);
+                    var actualizarFirmaResult = await ActualizarFirma(firmasOrdenCaptura, model.UserName, documentResult);
+                    await ActualizarEstadoOrdenCaptura(model.TipoFirma, firmasFinalizadas, model.OrdenCapturaFormato.NumeroOrdenCaptura, userName, actualizarFirmaResult);
                 }
                 #endregion
 
@@ -320,7 +363,6 @@ namespace Seje.OrdenCaptura.Api.Services
                 {
                     OrdenCapturaPDF documento = new();
 
-
                     string qrData = JsonConvert.SerializeObject(new Dictionary<string, string>(){
                         {"NumeroOrdenCaptura", formato.NumeroOrdenCaptura},
                         {"NombreImputado", formato.ExpedienteDetalle.NombreImputado},
@@ -330,18 +372,28 @@ namespace Seje.OrdenCaptura.Api.Services
                         {"EmitidaPor", formato.Juzgado}
                     }, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-                    var qr = GenerarQR(qrData);
+                    string qr = GenerarQR(qrData);
                     string logo = ObtenerLogo();
 
                     string template = Util.GetTemplate(tipoDocumento == (int)TipoDocumento.OrdenCaptura ? "OrdenCaptura.html" : "ContraOrdenCaptura.html", formato, institucion.Nombre, qr, logo);
 
                     byte[] res = null;
-                    HtmlToPdf converter = new HtmlToPdf();
-                    converter.Options.PdfPageSize = PdfPageSize.Letter;
-                    converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
-                    converter.Options.MarginTop = 0;
-                    PdfDocument doc = converter.ConvertHtmlString(template);
-                    res = doc.Save();
+                    var doc = new HtmlToPdfDocument()
+                    {
+                        GlobalSettings = {
+                            ColorMode = ColorMode.Color,
+                            Orientation = Orientation.Portrait,
+                            PaperSize = PaperKind.Letter,
+                        },
+                        Objects = {
+                            new ObjectSettings() {
+                                PagesCount = true,
+                                HtmlContent = template,
+                                WebSettings = { DefaultEncoding = "utf-8" }
+                            }
+                        }
+                    };
+                    res = _converter.Convert(doc);
 
                     documento.PdfBase64 = Convert.ToBase64String(res);
                     documento.Institucion = institucion.Nombre;
@@ -349,19 +401,18 @@ namespace Seje.OrdenCaptura.Api.Services
                         ? $"OrdenCaptura-{formato.NumeroOrdenCaptura}-{institucion.Nombre}.pdf"
                         : $"Contra-OrdenCaptura-{formato.NumeroOrdenCaptura}-{institucion.Nombre}.pdf";
                     documentos.Add(documento);
-
-                    doc.Close();
                 }
                 return documentos;
 
             }
             catch (Exception ex)
             {
+                _logger.LogInformation($"Error al generar documento:{ex.Message}");
                 return documentos;
             }
         }
 
-        private async Task<bool> GuardarDocumentos(FirmaRequest model, List<OrdenCapturaPDF> documentos,string userName, bool finalizado)
+        private async Task<bool> GuardarDocumentos(FirmaRequest model, List<OrdenCapturaPDF> documentos, string userName, bool finalizado)
         {
             var result = false;
             try
@@ -372,6 +423,7 @@ namespace Seje.OrdenCaptura.Api.Services
                     var archivo = new FileManager.Client.Models.Archivo
                     {
                         Id = Guid.NewGuid(),
+                        DirectoryId = Guid.NewGuid(),
                         Description = string.Empty,
                         FilePath = documento.FilePath,
                         UserName = userName ?? "anonimo",
@@ -415,14 +467,15 @@ namespace Seje.OrdenCaptura.Api.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogInformation($"Ocurrio un error al guardar documento:{ex.Message}");
                 result = false;
                 return result;
-            }  
+            }
         }
 
-        private async Task<bool> ActualizarFirma(List<QueryStack.Firma> firmasOrdenCaptura,string userName)
+        private async Task<bool> ActualizarFirma(List<QueryStack.Firma> firmasOrdenCaptura, string userName, bool documentResult)
         {
+            if (!documentResult) return false;
             bool result = false;
             try
             {
@@ -438,14 +491,14 @@ namespace Seje.OrdenCaptura.Api.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogInformation($"Ocurrio un error al actualizar la firma:{ex.Message}");
                 return result;
             }
-
         }
 
-        private async Task<bool> ActualizarEstadoOrdenCaptura(int tipoFirma,bool firmasFinalizadas,string numeroOrdenCaptura,string userName)
+        private async Task<bool> ActualizarEstadoOrdenCaptura(int tipoFirma, bool firmasFinalizadas, string numeroOrdenCaptura, string userName, bool actualizarFirmaResult)
         {
+            if (!actualizarFirmaResult) return false;
             try
             {
                 if (firmasFinalizadas)
@@ -453,23 +506,33 @@ namespace Seje.OrdenCaptura.Api.Services
                     var model = await Repository.GetBySpecAsync(new OrdenCapturaSpec(new FiltrosOrdenCaptura { NumeroOrdenCaptura = numeroOrdenCaptura }));
                     model.OrdenCapturaEstadoId = tipoFirma == (int)TipoFirmas.OrdenCaptura ? (int)OrdenCapturaEstados.PendienteDeEntrega : (int)OrdenCapturaEstados.ContraCaptura;
                     model.OrdenCapturaEstadoDescripcion = Enum.GetName(typeof(OrdenCapturaEstados), model.OrdenCapturaEstadoId);
-                    var command = new CommandStack.Commands.ModificarOrdenCapturaCommand(model.OrdenCapturaId, model.OrganoJurisdiccionalId, model.OrdenCapturaCodigo, model.NumeroOrdenCaptura, model.Correlativo, model.OrdenCapturaEstadoId, model.OrdenCapturaEstadoDescripcion, model.ExpedienteId, model.NumeroExpediente, model.InstanciaId, model.InstanciaDescripcion, model.CorreoSecretario, model.CorreoJuez, model.CorreoEscribiente, Convert.ToDateTime(model.FechaEmision), Convert.ToDateTime(model.FechaEntrega), model.AlertaInternacional, userName);
+                    var command = new CommandStack.Commands.ModificarOrdenCapturaCommand(model.OrdenCapturaId,
+                        model.OrganoJurisdiccionalId, model.OrdenCapturaCodigo,
+                        model.NumeroOrdenCaptura, model.Correlativo,
+                        model.OrdenCapturaEstadoId, model.OrdenCapturaEstadoDescripcion,
+                        model.ExpedienteId, model.NumeroExpediente,
+                        model.InstanciaId, model.InstanciaDescripcion,
+                        model.CorreoSecretario, model.CorreoJuez,
+                        model.CorreoEscribiente, Convert.ToDateTime(model.FechaEmision),
+                        Convert.ToDateTime(model.FechaEntrega), model.AlertaInternacional,
+                        model.DepartamentoId, model.DepartamentoDescripcion,
+                        model.MunicipioId, model.MunicipioDescripcion,
+                        model.Observaciones, userName);
                     await Mediator.Send(command);
                     return true;
                 }
-                else                
+                else
                     return false;
-                
+
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogInformation($"Ocurrio un error al actualizar el estado de la orden de captura:{ex.Message}");
                 return false;
             }
-
         }
-        
-        private async Task<List<OrdenCapturaPDF>> ObtenerDocumentos(List<OrdenCapturaPDF> documentos,FirmaRequest model)
+
+        private async Task<List<OrdenCapturaPDF>> ObtenerDocumentos(List<OrdenCapturaPDF> documentos, FirmaRequest model)
         {
             var documentosEntidad = await _documentoService.GetByFilter(new FiltrosDocumento
             {
@@ -478,7 +541,7 @@ namespace Seje.OrdenCaptura.Api.Services
             });
             foreach (var item in documentosEntidad?.Entity)
             {
-                var doc = new OrdenCapturaPDF();
+                OrdenCapturaPDF doc = new();
                 doc.FileName = $"{item.Nombre.Replace(".pdf", "-F.pdf")}";
                 doc.FilePath = item.Ubicacion;
                 var response = await _fileManagerClient.GetUrl(item.Codigo);
@@ -487,56 +550,78 @@ namespace Seje.OrdenCaptura.Api.Services
             }
             return documentos;
         }
-        
+
         private void EscribirDocumentoLocal(OrdenCapturaPDF doc, string numeroOrdenCaptura)
         {
-            if (!string.IsNullOrWhiteSpace(doc.PdfBase64))
+            try
             {
-                string directory = Path.Combine(_configuration.GetValue<string>(LocalFilePath), $"{numeroOrdenCaptura}");
-                doc.FilePath = Path.Combine(directory, doc.FileName);
-                Directory.CreateDirectory(directory);
-                File.WriteAllBytes(doc.FilePath, Convert.FromBase64String(doc.PdfBase64));
+                if (!string.IsNullOrWhiteSpace(doc.PdfBase64))
+                {
+                    string directory = Path.Combine(_configuration.GetValue<string>(LocalFilePath), $"{numeroOrdenCaptura}");
+                    doc.FilePath = Path.Combine(directory, doc.FileName);
+                    Directory.CreateDirectory(directory);
+                    File.WriteAllBytes(doc.FilePath, Convert.FromBase64String(doc.PdfBase64));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Ocurrio un error al escribir el documento en el directorio temporal:{ex.Message}");
             }
         }
 
         private void EliminarDirectorioLocal(string numeroOrdenCaptura)
         {
-            string directory = Path.Combine(_configuration.GetValue<string>(LocalFilePath), $"{numeroOrdenCaptura}");
-            if (Directory.Exists(directory))
-                Directory.Delete(directory, true);
+            try
+            {
+                string directory = Path.Combine(_configuration.GetValue<string>(LocalFilePath), $"{numeroOrdenCaptura}");
+                if (Directory.Exists(directory))
+                    Directory.Delete(directory, true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Ocurrio un error al eliminar el directorio temporal:{ex.Message}");
+            }
         }
 
         private static string GenerarQR(string secureQRCode)
         {
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(secureQRCode, QRCodeGenerator.ECCLevel.Q);
-            //QRCode qrCode = new QRCode(qrCodeData);
-            //Bitmap qrCodeImage = qrCode.GetGraphic(20, Color.DarkBlue, Color.AliceBlue, true);
             return new Base64QRCode(qrCodeData).GetGraphic(20);
         }
 
-        private static string ObtenerLogo()
+        private string ObtenerLogo()
         {
             string logo = string.Empty;
-            string logoUrl = "Templates/images/logo2.png";
-            using (Image image = Image.FromFile(logoUrl))
+            try
             {
-                using (MemoryStream m = new MemoryStream())
+                string logoUrl = _configuration.GetValue<string>(LogoFilePath);
+                using (Image image = Image.FromFile(logoUrl))
                 {
+                    using MemoryStream m = new();
                     image.Save(m, image.RawFormat);
                     byte[] imageBytes = m.ToArray();
                     logo = Convert.ToBase64String(imageBytes);
                 }
+                return logo;
             }
-            return logo;
+            catch (Exception)
+            {
+                _logger.LogInformation($"Ocurrio un error al intentar generar logo: {logo}");
+                return logo;
+            }
         }
 
-        private static List<QueryStack.OrdenCaptura> FiltrarPorPermisos(List<QueryStack.OrdenCaptura> ordenes,List<Permission> permisos)
+        private async Task<List<QueryStack.OrdenCaptura>> FiltrarOrdenCapturaPermiso(List<QueryStack.OrdenCaptura> ordenes, string userName)
         {
             List<QueryStack.OrdenCaptura> ordenesFiltradas = new();
+
+            var permisos = await _authorizationService.GetPermissionsBy(userName, _configuration.GetValue<string>(Component));
+
             foreach (var permiso in permisos)
             {
-                ordenesFiltradas.AddRange(ordenes?.Where(x => x.OrdenCapturaEstadoDescripcion == permiso.Name).Select(x => x).ToList());
+                var nombrePermiso = permiso.Name.Trim();
+                ordenesFiltradas.AddRange(ordenes?.Where(x => x.OrdenCapturaEstadoDescripcion.Replace(" ", "") == nombrePermiso).Select(x => x).ToList());
             }
             ordenesFiltradas = ordenesFiltradas.OrderByDescending(x => x.OrdenCapturaId).ToList();
             return ordenesFiltradas;

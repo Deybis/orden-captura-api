@@ -23,6 +23,11 @@ namespace Seje.OrdenCaptura.CommandStack.Models
         public DateTime FechaEmision { get; set; }
         public DateTime FechaEntrega { get; set; }
         public bool AlertaInternacional { get; set; }
+        public int DepartamentoId { get; set; }
+        public string DepartamentoDescripcion { get; set; }
+        public int MunicipioId { get; set; }
+        public string MunicipioDescripcion { get; set; }
+        public string Observaciones { get; set; }
         public IEnumerable<MementoFX.DomainEvent> GetOccurredEvents()
         {
             return OccurredEvents;

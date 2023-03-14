@@ -8,39 +8,39 @@ namespace Seje.OrdenCaptura.Api.Mapper
     {
         public MappingProfile()
         {
-            CreateMap<QueryStack.OrdenCaptura, OrdenCaptura>().ReverseMap();
-            CreateMap<QueryStack.OrdenCaptura, OrdenCapturaModificadaEvent>().ReverseMap();
-            CreateMap<QueryStack.OrdenCaptura, OrdenCapturaRegistradaEvent>().ReverseMap();
-            CreateMap<OrdenCaptura, RegistrarOrdenCapturaCommand>().ReverseMap();
-            CreateMap<OrdenCaptura, ModificarOrdenCapturaCommand>().ReverseMap();
-            CreateMap<CommandStack.Models.OrdenCaptura, OrdenCaptura>().ReverseMap();
-            CreateMap<OrdenCapturaRegistradaEvent, OrdenCaptura>().ReverseMap();
-            CreateMap<OrdenCapturaModificadaEvent, OrdenCaptura>().ReverseMap();
-            CreateMap<OrdenCaptura, ActualizarOrdenCaptura>().ReverseMap();
+            CreateMap<QueryStack.OrdenCaptura, OrdenCaptura>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.OrdenCaptura, OrdenCapturaModificadaEvent>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.OrdenCaptura, OrdenCapturaRegistradaEvent>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<OrdenCaptura, RegistrarOrdenCapturaCommand>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<OrdenCaptura, ModificarOrdenCapturaCommand>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<CommandStack.Models.OrdenCaptura, OrdenCaptura>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<OrdenCapturaRegistradaEvent, OrdenCaptura>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<OrdenCapturaModificadaEvent, OrdenCaptura>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<OrdenCaptura, ActualizarOrdenCaptura>().ReverseMap().ForAllMembers(x => x.AllowNull());
 
-            CreateMap<QueryStack.Expediente, Expediente>().ReverseMap();
-            CreateMap<QueryStack.Expediente, RegistrarExpediente>().ReverseMap();
-            CreateMap<QueryStack.Expediente, ActualizarExpediente>().ReverseMap();
+            CreateMap<QueryStack.Expediente, Expediente>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.Expediente, RegistrarExpediente>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.Expediente, ActualizarExpediente>().ReverseMap().ForAllMembers(x => x.AllowNull());
 
-            CreateMap<QueryStack.Delito, Delito>().ReverseMap();
-            CreateMap<QueryStack.Delito, RegistrarDelito>().ReverseMap();
-            CreateMap<QueryStack.Delito, ActualizarDelito>().ReverseMap();
-            CreateMap<Delito, ActualizarDelito>().ReverseMap();
-            CreateMap<Delito, RegistrarDelito>().ReverseMap();
+            CreateMap<QueryStack.Delito, Delito>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.Delito, RegistrarDelito>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.Delito, ActualizarDelito>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<Delito, ActualizarDelito>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<Delito, RegistrarDelito>().ReverseMap().ForAllMembers(x => x.AllowNull());
 
-            CreateMap<QueryStack.Parte, Parte>().ReverseMap();
-            CreateMap<QueryStack.Parte, RegistrarParte>().ReverseMap();
-            CreateMap<QueryStack.Parte, ActualizarParte>().ReverseMap();
-            CreateMap<Parte, ActualizarParte>().ReverseMap();
-            CreateMap<Parte, RegistrarParte>().ReverseMap();
+            CreateMap<QueryStack.Parte, Parte>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.Parte, RegistrarParte>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.Parte, ActualizarParte>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<Parte, ActualizarParte>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<Parte, RegistrarParte>().ReverseMap().ForAllMembers(x => x.AllowNull());
 
-            CreateMap<QueryStack.OrdenCapturaEstado, OrdenCapturaEstado>().ReverseMap();
-            CreateMap<QueryStack.Firma, Firma>().ReverseMap();
-            CreateMap<QueryStack.TipoFirma, TipoFirma>().ReverseMap();
-            CreateMap<QueryStack.Configuracion, Configuracion>().ReverseMap();
-            CreateMap<QueryStack.Documento, Documento>().ReverseMap();
-            CreateMap<QueryStack.TipoDocumento, Models.TipoDocumento>().ReverseMap();
-            CreateMap<QueryStack.Firmante, Firmante>().ReverseMap();
+            CreateMap<QueryStack.OrdenCapturaEstado, OrdenCapturaEstado>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.Firma, Firma>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.TipoFirma, TipoFirma>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.Configuracion, Configuracion>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.Documento, Documento>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.TipoDocumento, Models.TipoDocumento>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.Firmante, Firmante>().ReverseMap().ForAllMembers(x => x.AllowNull());
         }
     }
 }

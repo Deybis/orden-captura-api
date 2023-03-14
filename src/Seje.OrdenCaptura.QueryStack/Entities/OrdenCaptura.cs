@@ -52,6 +52,20 @@ namespace Seje.OrdenCaptura.QueryStack
         public bool AlertaInternacional { get; set; }
 
         [Required]
+        public int DepartamentoId { get; set; }
+
+        [Required]
+        public string DepartamentoDescripcion { get; set; }
+
+        [Required]
+        public int MunicipioId { get; set; }
+
+        [Required]
+        public string MunicipioDescripcion { get; set; }
+
+        public string Observaciones { get; set; }
+
+        [Required]
         public DateTime FechaEmision { get; set; }
         public DateTime FechaEntrega { get; set; }
         public OrdenCapturaEstado OrdenCapturaEstado { get; set; }

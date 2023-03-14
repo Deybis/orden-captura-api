@@ -25,6 +25,10 @@ namespace Seje.OrdenCaptura.CommandStack.Models
             this.CorreoEscribiente = CorreoEscribiente;
             this.FechaEmision = FechaEmision;
             this.AlertaInternacional = AlertaInternacional;
+            this.DepartamentoId = DepartamentoId;
+            this.DepartamentoDescripcion = DepartamentoDescripcion;
+            this.MunicipioId = MunicipioId;
+            this.MunicipioDescripcion = MunicipioDescripcion;
         }
 
         public void ApplyEvent(OrdenCapturaModificadaEvent @event)
@@ -46,6 +50,11 @@ namespace Seje.OrdenCaptura.CommandStack.Models
             this.FechaEmision = FechaEmision;
             this.FechaEntrega = FechaEntrega;
             this.AlertaInternacional = AlertaInternacional;
+            this.DepartamentoId = DepartamentoId;
+            this.DepartamentoDescripcion = DepartamentoDescripcion;
+            this.MunicipioId = MunicipioId;
+            this.MunicipioDescripcion = MunicipioDescripcion;
+            this.Observaciones = Observaciones;
         }
     }
 }

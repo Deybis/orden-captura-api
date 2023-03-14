@@ -22,6 +22,11 @@ namespace Seje.OrdenCaptura.CommandStack.Events
         public DateTime FechaEmision { get; set; }
         public DateTime FechaEntrega { get; set; }
         public bool AlertaInternacional { get; set; }
+        public int DepartamentoId { get; set; }
+        public string DepartamentoDescripcion { get; set; }
+        public int MunicipioId { get; set; }
+        public string MunicipioDescripcion { get; set; }
+        public string Observaciones { get; set; }
 
         public OrdenCapturaModificadaEvent(
             long OrdenCapturaId,
@@ -41,6 +46,11 @@ namespace Seje.OrdenCaptura.CommandStack.Events
             DateTime FechaEmision,
             DateTime FechaEntrega,
             bool AlertaInternacional,
+            int DepartamentoId,
+            string DepartamentoDescripcion,
+            int MunicipioId,
+            string MunicipioDescripcion,
+            string Observaciones,
             string UserName
         ) : base(UserName)
         {
@@ -61,6 +71,11 @@ namespace Seje.OrdenCaptura.CommandStack.Events
             this.FechaEmision = FechaEmision;
             this.FechaEntrega = FechaEntrega;
             this.AlertaInternacional = AlertaInternacional;
+            this.DepartamentoId = DepartamentoId;
+            this.DepartamentoDescripcion = DepartamentoDescripcion;
+            this.MunicipioId = MunicipioId;
+            this.MunicipioDescripcion = MunicipioDescripcion;
+            this.Observaciones = Observaciones;
         }
     }
 }

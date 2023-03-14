@@ -65,9 +65,9 @@ namespace Seje.OrdenCaptura.Api.Controllers
 
         [HttpPost("create")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<Result<Expediente>> Create(RegistrarExpediente expediente)
+        public async Task<Result<RegistrarExpediente>> Create(RegistrarExpediente expediente)
         {
-            var result = new Result<Expediente>(true, null, new Expediente());
+            var result = new Result<RegistrarExpediente>(true, null, new RegistrarExpediente());
             if (ModelState.IsValid)
             {
                 result = await _expedienteService.Create(expediente, UserName);

@@ -18,7 +18,8 @@ namespace Seje.OrdenCaptura.Api
         public bool AlertaInternacional { get; set; }
         public string FechaEmision { get; set; }
         public string FechaEntrega { get; set; }
-        public string añoActual { get; set; }
+        public string AñoActual { get; set; }
+        public int Mes { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
     }
@@ -107,5 +108,12 @@ namespace Seje.OrdenCaptura.Api
     {
         public int FirmanteId { get; set; }
         public string Identificador { get; set; }
+    }
+
+    public class FiltrosEstadistica
+    {
+        public int Año { get; set; }
+        public int Mes { get; set; }
+        public int OrganoJurisdiccionalId { get; set; }
     }
 }

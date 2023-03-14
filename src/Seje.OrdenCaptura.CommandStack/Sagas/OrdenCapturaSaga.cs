@@ -40,6 +40,10 @@ namespace Seje.OrdenCaptura.CommandStack.Sagas
                 request.CorreoEscribiente,
                 request.FechaEmision,
                 request.AlertaInternacional,
+                request.DepartamentoId,
+                request.DepartamentoDescripcion,
+                request.MunicipioId,
+                request.MunicipioDescripcion,
                 request.UserName);
             await Repository.SaveAsync(model);
             return Result<Models.OrdenCaptura>.Ok(model);
@@ -65,6 +69,11 @@ namespace Seje.OrdenCaptura.CommandStack.Sagas
                 request.FechaEmision,
                 request.FechaEntrega,
                 request.AlertaInternacional,
+                request.DepartamentoId,
+                request.DepartamentoDescripcion,
+                request.MunicipioId,
+                request.MunicipioDescripcion,
+                request.Observaciones,
                 request.UserName);
             await Repository.SaveAsync(model);
             return Result<Models.OrdenCaptura>.Ok(model);

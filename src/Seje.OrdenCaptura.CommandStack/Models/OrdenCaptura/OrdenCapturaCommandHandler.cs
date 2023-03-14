@@ -22,6 +22,10 @@ namespace Seje.OrdenCaptura.CommandStack.Models
             string CorreoEscribiente,
             DateTime FechaEmision,
             bool AlertaInternacional,
+            int DepartamentoId,
+            string DepartamentoDescripcion,
+            int MunicipioId,
+            string MunicipioDescripcion,
             string UserName)
         {
             var @event = new OrdenCapturaRegistradaEvent(
@@ -41,6 +45,10 @@ namespace Seje.OrdenCaptura.CommandStack.Models
                 CorreoEscribiente,
                 FechaEmision,
                 AlertaInternacional,
+                DepartamentoId,
+                DepartamentoDescripcion,
+                MunicipioId,
+                MunicipioDescripcion,
                 UserName);
             RaiseEvent(@event);
         }
@@ -63,6 +71,11 @@ namespace Seje.OrdenCaptura.CommandStack.Models
              DateTime FechaEmision,
              DateTime FechaEntrega,
              bool AlertaInternacional,
+             int DepartamentoId,
+             string DepartamentoDescripcion,
+             int MunicipioId,
+             string MunicipioDescripcion,
+             string Observaciones,
              string UserName)
         {
             var @event = new OrdenCapturaModificadaEvent(
@@ -83,6 +96,11 @@ namespace Seje.OrdenCaptura.CommandStack.Models
                 FechaEmision,
                 FechaEntrega,
                 AlertaInternacional,
+                DepartamentoId,
+                DepartamentoDescripcion,
+                MunicipioId,
+                MunicipioDescripcion,
+                Observaciones,
                 UserName);
             RaiseEvent(@event);
         }

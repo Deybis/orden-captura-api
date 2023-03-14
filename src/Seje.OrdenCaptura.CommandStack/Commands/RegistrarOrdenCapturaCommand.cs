@@ -23,6 +23,10 @@ namespace Seje.OrdenCaptura.CommandStack.Commands
         public string CorreoEscribiente { get; set; }
         public DateTime FechaEmision { get; set; }
         public bool AlertaInternacional { get; set; }
+        public int DepartamentoId { get; set; }
+        public string DepartamentoDescripcion { get; set; }
+        public int MunicipioId { get; set; }
+        public string MunicipioDescripcion { get; set; }
 
         public RegistrarOrdenCapturaCommand(
             long OrdenCapturaId,
@@ -41,6 +45,10 @@ namespace Seje.OrdenCaptura.CommandStack.Commands
             string CorreoEscribiente,
             DateTime FechaEmision,
             bool AlertaInternacional,
+            int DepartamentoId,
+            string DepartamentoDescripcion,
+            int MunicipioId,
+            string MunicipioDescripcion,
             string UserName
         ): base(UserName)
         {
@@ -60,6 +68,10 @@ namespace Seje.OrdenCaptura.CommandStack.Commands
             this.CorreoEscribiente = CorreoEscribiente;
             this.FechaEmision = FechaEmision;
             this.AlertaInternacional = AlertaInternacional;
+            this.DepartamentoId = DepartamentoId;
+            this.DepartamentoDescripcion = DepartamentoDescripcion;
+            this.MunicipioId = MunicipioId;
+            this.MunicipioDescripcion = MunicipioDescripcion;
         }    
     }
 }

@@ -20,6 +20,11 @@ namespace Seje.OrdenCaptura.Api
         public string CorreoJuez { get; set; }
         public string CorreoEscribiente { get; set; }
         public bool AlertaInternacional { get; set; }
+        public int DepartamentoId { get; set; }
+        public string DepartamentoDescripcion { get; set; }
+        public int MunicipioId { get; set; }
+        public string MunicipioDescripcion { get; set; }
+        public string Observaciones { get; set; }
         public DateTime FechaEmision { get; set; }
         public DateTime FechaEntrega { get; set; }
     }
@@ -57,10 +62,21 @@ namespace Seje.OrdenCaptura.Api
 
         [Required]
         public string FechaEmision { get; set; }
-        public string FechaEntrega { get; set; }
 
         [Required]
         public bool AlertaInternacional { get; set; }
+
+        [Required]
+        public int DepartamentoId { get; set; }
+
+        [Required]
+        public string DepartamentoDescripcion { get; set; }
+
+        [Required]
+        public int MunicipioId { get; set; }
+
+        [Required]
+        public string MunicipioDescripcion { get; set; }
     }
     public class ActualizarOrdenCaptura
     {
@@ -81,6 +97,11 @@ namespace Seje.OrdenCaptura.Api
         public string FechaEmision { get; set; }
         public string FechaEntrega { get; set; }
         public bool AlertaInternacional { get; set; }
+        public int DepartamentoId { get; set; }
+        public string DepartamentoDescripcion { get; set; }
+        public int MunicipioId { get; set; }
+        public string MunicipioDescripcion { get; set; }
+        public string Observaciones { get; set; }
     }
 
     public class OrdenCapturaPDF

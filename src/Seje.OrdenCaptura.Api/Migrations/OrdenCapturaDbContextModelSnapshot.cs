@@ -317,6 +317,13 @@ namespace Seje.OrdenCaptura.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DepartamentoDescripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DepartamentoId")
+                        .HasColumnType("int");
+
                     b.Property<long>("ExpedienteId")
                         .HasColumnType("bigint");
 
@@ -338,12 +345,22 @@ namespace Seje.OrdenCaptura.Api.Migrations
                     b.Property<int>("InstanciaId")
                         .HasColumnType("int");
 
+                    b.Property<string>("MunicipioDescripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MunicipioId")
+                        .HasColumnType("int");
+
                     b.Property<string>("NumeroExpediente")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NumeroOrdenCaptura")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Observaciones")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("OrdenCapturaCodigo")

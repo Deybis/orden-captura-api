@@ -204,10 +204,9 @@ namespace Seje.OrdenCaptura.Api.Services
                         var create = await Repository.AddAsync(_mapper.Map<QueryStack.Documento>(doc));
                     }
                     #endregion
-
+                    result.Success = response;
                 }
                 EliminarDirectorioLocal(numeroOrdenCaptura);
-                result.Success = true;
                 return result;
             }
             catch (Exception ex)

@@ -109,16 +109,16 @@ namespace Seje.OrdenCaptura.Api.Services
             return result;
         }
 
-        public async Task<Result<Expediente>> Create(RegistrarExpediente model, string userName)
+        public async Task<Result<RegistrarExpediente>> Create(RegistrarExpediente model, string userName)
         {
-            var result = new Result<Expediente>(true, null, new Expediente());
+            var result = new Result<RegistrarExpediente>(true, null, new RegistrarExpediente());
 
             try
             {
                 var validator = new RegistrarExpedienteValidator();
                 var validation = validator.Validate(model);
                 if (!validation.IsValid)
-                    return Result<Expediente>.Failure(validation.Errors.Select(e => e.ErrorMessage).FirstOrDefault());
+                    return Result<RegistrarExpediente>.Failure(validation.Errors.Select(e => e.ErrorMessage).FirstOrDefault());
 
                 var ct = new CancellationTokenSource();
                 ct.CancelAfter(TimeSpan.FromSeconds(60));
@@ -134,7 +134,6 @@ namespace Seje.OrdenCaptura.Api.Services
                     result.Success = false;
                     return result;
                 }
-
                 var exp = _mapper.Map<QueryStack.Expediente>(model);
                 exp.UsuarioCreacion = userName;
                 exp.UsuarioModificacion = userName;
@@ -159,7 +158,7 @@ namespace Seje.OrdenCaptura.Api.Services
                 }
 
                 var create = await Repository.AddAsync(exp, ct.Token);
-                result.Entity = _mapper.Map<Expediente>(create);
+                result.Entity = model;
 
                 return result;
             }

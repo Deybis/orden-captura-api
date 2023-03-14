@@ -22,8 +22,11 @@ namespace Seje.OrdenCaptura.Api.Models
             if (filtro.OrganoJurisdiccionalId > 0)
                 Query.Where(x => x.OrganoJurisdiccionalId == filtro.OrganoJurisdiccionalId);
 
-            if (!string.IsNullOrWhiteSpace(filtro.añoActual))
-                Query.Where(x => x.FechaEmision.Year == Convert.ToInt32(filtro.añoActual));
+            if (!string.IsNullOrWhiteSpace(filtro.AñoActual))
+                Query.Where(x => x.FechaEmision.Year == Convert.ToInt32(filtro.AñoActual));
+
+            if (filtro.Mes > 0)
+                Query.Where(x => x.FechaEmision.Month == filtro.Mes);
 
             if (!string.IsNullOrWhiteSpace(filtro.CorreoEscribiente) || !string.IsNullOrWhiteSpace(filtro.CorreoEscribiente) || !string.IsNullOrWhiteSpace(filtro.CorreoEscribiente))
                 Query.Where(x => x.CorreoEscribiente == filtro.CorreoEscribiente || x.CorreoJuez == filtro.CorreoJuez || x.CorreoSecretario == filtro.CorreoSecretario);
@@ -90,6 +93,9 @@ namespace Seje.OrdenCaptura.Api.Models
         {
             if (!string.IsNullOrWhiteSpace(filtro.NumeroExpediente))
                 Query.Where(x => x.NumeroExpediente == filtro.NumeroExpediente);
+
+            if (filtro.OrganoJurisdiccionalId > 0)
+                Query.Where(x => x.OrganoJurisdiccionalId == filtro.OrganoJurisdiccionalId);
 
             Query.Include(e => e.Partes);
             Query.Include(e => e.Delitos);

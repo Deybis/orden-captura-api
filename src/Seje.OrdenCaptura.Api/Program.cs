@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Seje.OrdenCaptura.Api
@@ -7,14 +9,27 @@ namespace Seje.OrdenCaptura.Api
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();            
+            CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                var env = hostingContext.HostingEnvironment;
+                if (!env.IsDevelopment())
                 {
-                    webBuilder.UseStartup<Startup>();
-                });
+                    config.Sources.Clear();
+                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile("secrets/appsettings.json", optional: true, reloadOnChange: true);
+                    config.AddEnvironmentVariables();
+                    if (args != null)
+                    {
+                        config.AddCommandLine(args);
+                    }
+                }
+            })
+            .UseStartup<Startup>();
     }
 }

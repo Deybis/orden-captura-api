@@ -2,220 +2,94 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title></title>
-    <style type="text/css">
-        .fotmat-content {
-            margin: 0 auto;
-            background-color: #fff;
-            width: 100%;
-            /*min-height: 1345px;*/
-            min-height: 1056px;
-        }
-
-        .format-header {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            line-height: 1.5;
-            margin: 40px;
-        }
-
-        .format-header-title {
-            padding: 5px 15px;
-            font-size: 20px;
-            font-weight: bolder;
-            color: #000;
-            text-align: center;
-        }
-
-        .format-header-description {
-            color: #000;
-            font-size: 17px;
-            text-align: center;
-        }
-
-        .format-table {
-            padding: 50px 80px;
-            box-sizing: border-box;
-            width: 100%;
-            font-family: 'Roboto',Arial, Helvetica, sans-serif;
-        }
-
-        .format-table-body {
-            font-family: 'Roboto', sans-serif;
-        }
-
-        .fotmat-group {
-            border-radius: 3px;
-            border: 1px solid #e1e1e1;
-        }
-
-        .format-table-tr {
-            display: grid;
-            gap: 25px;
-            grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
-        }
-
-        .format-table-td {
-            font-size: 17px;
-            color: #000;
-            padding: 10px 15px;
-            line-height: 1.5;
-        }
-
-        .table-td-border-bottom {
-            border-bottom: 1px solid #e1e1e1;
-        }
-
-        .format-label {
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 16px;
-        }
-
-        .format-table-text-area {
-            border: none !important;
-            background-color: inherit !important;
-            min-height: 100%;
-        }
-
-        .d-flex{
-            display: flex;
-        }
-        .justify-content-between{
-            justify-content: space-between;
-        }
-        .justify-content-end{
-            justify-content: flex-end;
-        }
-        .flex-column{
-            flex-direction: column;
-        } 
-        .justify-content-center{
-            justify-content: center;
-        }
-        .align-items-center{
-            align-items: center;
-        }
-        .mt-5{
-            margin-top: 50px;
-        }
-        .mt-4{
-            margin-top: 40px;
-        }
-        .mt-3{
-            margin-top: 30px;
-        }
-        .mt-2{
-            margin-top: 20px;
-        }
-        .mt-1{
-            margin-top: 10px;
-        }
-    </style>
 </head>
 <body leftMargin=5 topMargin=5 rightMargin=5 bottomMargin=5 style="background-color: #FFFFFF;font-size: 17px; font-family: Arial, Helvetica, sans-serif;">
     <div class="fotmat-content">
-        <div class="format-table" id="contentToConvert">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <div><b>Exp: </b>$NumeroExpediente$</div>
-                    <div><b>Juez: </b>$DespachoSala$</div>
-                </div>
-                <div>
-                    <span><b>
-                        $NumeroFormato$
-                    </b></span>
-                </div>
-            </div>
-    
-            <div class="format-table-body">
-                <div class="format-header">
-                    <img src="data:image/png;base64,$LOGO$" alt="logo-poder-judicial">
-                    <div colspan="2">
-                        <label class="format-header-title">
-                            $Juzgado$
-                        </label>
-                    </div>
-                </div>
-    
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <div><b>$Ciudad$</b></div>
-                        <div><b>$FechaEmision$</b></div>
-                    </div>
-                    <div>
-                        <div><b>Orden de captura:</b></div>
-                        <div class="d-flex justify-content-end"><b>$NumeroOrdenCaptura$</b></div>
-                    </div>
-                </div> 
-    
-                <div class="mt-5">
-                    <div>
-                        <b>Señor Director</b>
-                    </div>
-                    <div>
-                        $NombreInstitucionPolicial$
-                    </div>
-                    <div>
-                        Su oficina.
-                    </div>
-                    <div class="mt-3">
+        <table style="width:100%" border="0" cellpadding="1">
+            <tr>
+                <td><b>Exp: </b>$NumeroExpediente$</td>
+                <td style="text-align:right"><span><b> $NumeroFormato$</b></span></td>
+            </tr>
+            <tr>
+                <td><b>Juez: </b>$DespachoSala$</td>
+            </tr>
+            <tbody>
+                <tr>
+                    <td colspan="2" style="text-align:center;padding:20px 0 30px 0">
+                        <img src="data:image/png;base64,$LOGO$" alt="logo-poder-judicial">
+                        <div style="margin: 5px 0 0 0; text-align: center; width: 100%; font-size: 19px;">
+                            <b>$Juzgado$</b>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>$Ciudad$</b></td>
+                    <td style="text-align:right"><b>Orden de captura:</b></td>
+                </tr>
+                <tr>
+                    <td><b>$FechaEmision$</b></td>
+                    <td style="text-align:right"><b>$NumeroOrdenCaptura$</b></td>
+                </tr>
+                <tr>
+                    <td style="padding-top:20px">
+                        <div><b>Señor Director</b></div>
+                        <div>$NombreInstitucionPolicial$</div>
+                        <div>Su oficina.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding:15px 0 15px 0;text-align:justify">
                         Por medio de la presente y con instrucciones de este despacho de justicia, sírvase ordenar a quien
                         corresponda dar inmediata captura a:
-                    </div>
-                    <div class="mt-1" style="border:1px dashed #e8e8e8;border-radius:5px;padding: 10px;">
-                        <div class="mt-1">
-                            <b>Imputado:</b> $NombreImputado$
-                        </div>
-                        <div class="mt-1">
-                            <b>País de nacimiento:</b> $NacionalidadImputado$
-                        </div>
-                        <div class="mt-1">
-                            <b>DNI:</b> $DniImputado$
-                        </div>
-                        <div class="mt-1">
-                            <b>Edad:</b> $EdadImputado$
-                        </div>
-                        <div class="mt-1">
-                            <b>Domicilio:</b> $DomicilioImputado$
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <div>
-                            A quien se le supone responsable de el o los delitos de:
-                            <span><b>$Delitos$</b></span>
-                            en perjuicio de
-                            <span><b>$Victimas$</b> </span>
-                        </div>
-                    </div>
-                    <div class="mt-2">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding:10px;border:1px dashed #999;width:100%;margin:10px 0;border-radius:5px">
+                        <div><b>Imputado:</b> $NombreImputado$</div>
+                        <div><b>País de nacimiento:</b> $NacionalidadImputado$</div>
+                        <div><b>DNI:</b> $DniImputado$ </div>
+                        <div><b>Edad:</b> $EdadImputado$</div>
+                        <div><b>Domicilio:</b> $DomicilioImputado$</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="height:70px;padding-top:5px">
+                        A quien se le supone responsable de el o los delitos de:
+                        <span><b>$Delitos$</b></span>
+                        en perjuicio de
+                        <span><b>$Victimas$</b> </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding-top:10px">
                         <div>
                             Una vez habido deberá ser puesto a la orden de esta judicatura, a fin de hacerle saber los hechos
                             que versan en su contra, todo con la debida asistencia técnica jurídica.
                         </div>
-                        <div class="mt-1">
+                        <div style="margin:15px 0 0 0">
                             <b>Atentamente</b>
                         </div>
-                    </div>
-                    <br />
-                    <div class="mt-3 d-flex flex-column justify-content-center align-items-center">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align:center;padding:70px 0 0 0">
                         <div>$NombreJuez$</div>
-                        <div>$PuestoJuez$</div>
-                    </div>
-                    <br />
-                    <br />
-                    <div class="mt-5 d-flex flex-column justify-content-center align-items-center">
+                        <div><b>$PuestoJuez$</b></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align:center;padding:90px 0 0 0">
                         <div>$NombreSecretario$</div>
-                        <div>$PuestoSecretario$</div>
-                    </div>
-                    <div class="mt-4 d-flex justify-content-center">
-                        <img alt="codigoQR" width="150" src="data:image/png;base64,$QR$" />
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <div><b>$PuestoSecretario$</b></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align:center;padding:40px 0 0 0">
+                        <img alt="codigoQR" width="180" src="data:image/png;base64,$QR$" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>        
     </div>    
 </body>
 </html>
