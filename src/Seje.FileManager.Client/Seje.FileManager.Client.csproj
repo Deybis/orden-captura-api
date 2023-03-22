@@ -8,6 +8,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.16" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.16" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.16" />
+    <PackageReference Include="Microsoft.IdentityModel" Version="7.0.0" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>

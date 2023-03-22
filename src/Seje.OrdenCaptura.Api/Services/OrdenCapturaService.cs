@@ -339,6 +339,7 @@ namespace Seje.OrdenCaptura.Api.Services
                     firmasRealizadas++;
                     bool firmasFinalizadas = firmasOrdenCaptura?.Count == firmasRealizadas;
                     var documentResult = await GuardarDocumentos(model, documentos, userName, firmasFinalizadas);
+                    result.Success = documentResult;
                     var actualizarFirmaResult = await ActualizarFirma(firmasOrdenCaptura, model.UserName, documentResult);
                     await ActualizarEstadoOrdenCaptura(model.TipoFirma, firmasFinalizadas, model.OrdenCapturaFormato.NumeroOrdenCaptura, userName, actualizarFirmaResult);
                 }

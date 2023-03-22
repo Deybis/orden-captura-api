@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.SecurityTokenService;
 using Newtonsoft.Json;
 using Seje.FileManager.Client.Models;
 using System;
@@ -39,50 +40,71 @@ namespace Seje.FileManager.Client
 
         public async Task<FileToken> GetUrl(Guid id)
         {
-            var url = $"file/token/{id}";
-            HttpResponseMessage response = await httpClient.GetAsync(url);
             FileToken result = new FileToken();
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var stringResponse = await response.Content.ReadAsStringAsync();
-                var re = JsonConvert.DeserializeObject<FileToken>(stringResponse);
-      
-                var bytes = await httpClient.GetByteArrayAsync(re.Url); 
-                re.fileBase64String = Convert.ToBase64String(bytes);
-  
-                result = re;
+                var url = $"file/token/{id}";
+                HttpResponseMessage response = await httpClient.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+                    var re = JsonConvert.DeserializeObject<FileToken>(stringResponse);
+
+                    var bytes = await httpClient.GetByteArrayAsync(re.Url);
+                    re.fileBase64String = Convert.ToBase64String(bytes);
+                    result = re;
+                }
+                else
+                {
+                    logger.LogInformation("FileManagerClient:No se encontró el documento");
+                    if (response.StatusCode != HttpStatusCode.NotFound)
+                        response.EnsureSuccessStatusCode();
+                }
+                return result;
             }
-            else
+            catch (Exception ex)
             {
-                logger.LogInformation("FileManagerClient:No se encontró el documento");
-                if (response.StatusCode != HttpStatusCode.NotFound)
-                    response.EnsureSuccessStatusCode();
+                return result;
             }
-            return result;
+
         }
 
         public async Task<bool> UploadFile(Archivo model)
         {
-            var url = "/file/upload";
+            bool result = false;
             try
             {
-                using var form = new MultipartFormDataContent();
-                using var fs = File.OpenRead(model.FilePath);
-                using var streamContent = new StreamContent(fs);
-                using var fileContent = new ByteArrayContent(await streamContent.ReadAsByteArrayAsync());
-                fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
-                form.Add(fileContent, "file", model.FileName);
-                StringContent jsonPart = new(JsonConvert.SerializeObject(model));
-                form.Add(jsonPart, "model");
-                HttpResponseMessage response = await httpClient.PostAsync(url, form);
-                response.EnsureSuccessStatusCode();
-                return response.IsSuccessStatusCode;
+                return await uploadFile(model);
+            }
+            catch (BadRequestException bex)
+            {
+                logger.LogInformation("FileManagerClient - UploadFile: " + bex.Message);
+                var successRoot = await CreateRoot(new DirectoryRoot { DirectoryId = Guid.NewGuid(), SystemIdentifier = "OrdenCaptura" });
+                if (successRoot) result = await uploadFile(model);
+
+                return result;
             }
             catch (Exception ex)
             {
                 logger.LogInformation("FileManagerClient - UploadFile: " + ex.Message);
-            }
-            return false;
+                return result;
+            }           
+        }
+
+        private async Task<bool> uploadFile(Archivo model)
+        {
+            var url = "/file/upload";
+            using var form = new MultipartFormDataContent();
+            using var fs = File.OpenRead(model.FilePath);
+            using var streamContent = new StreamContent(fs);
+            using var fileContent = new ByteArrayContent(await streamContent.ReadAsByteArrayAsync());
+            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
+            form.Add(fileContent, "file", model.FileName);
+            StringContent jsonPart = new(JsonConvert.SerializeObject(model));
+            form.Add(jsonPart, "model");
+            HttpResponseMessage response = await httpClient.PostAsync(url, form);
+            response.EnsureSuccessStatusCode();
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> UploadFile(ArchivoExpediente model)
