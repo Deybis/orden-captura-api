@@ -12,6 +12,7 @@ namespace Seje.OrdenCaptura.Api
         public long ExpedienteId { get; set; }
         public string NumeroExpediente { get; set; }
         public int InstanciaId { get; set; }
+        public long ParteId { get; set; }
         public string CorreoSecretario { get; set; }
         public string CorreoJuez { get; set; }
         public string CorreoEscribiente { get; set; }
@@ -58,6 +59,14 @@ namespace Seje.OrdenCaptura.Api
     {
         public int OrdenCapturaEstadoId { get; set; }
         public string Descripcion { get; set; }
+    }
+
+    public class FiltrosOrdenCapturaParte
+    {
+        public int id { get; set; }
+        public int ParteId { get; set; }
+        public string NumeroOrdenCaptura { get; set; }
+        public string ParteDescripcion { get; set; }
     }
 
     public class FiltrosFirma

@@ -1,8 +1,6 @@
 ﻿using Ardalis.Specification;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Seje.OrdenCaptura.Api.Models
 {
@@ -10,8 +8,15 @@ namespace Seje.OrdenCaptura.Api.Models
     {
         public OrdenCapturaSpec(FiltrosOrdenCaptura filtro)
         {
+            Query.Include(x => x.OrdenCapturaParte);
+            Query.Include(x => x.Firmas);
+            Query.Include(x => x.Documentos);
+
             if (filtro.OrdenCapturaId > 0)
                 Query.Where(x => x.OrdenCapturaId == filtro.OrdenCapturaId);
+
+            if (filtro.ParteId > 0)
+                Query.Where(x => x.OrdenCapturaParte.ParteId == filtro.ParteId);
 
             if (!string.IsNullOrWhiteSpace(filtro.NumeroExpediente))
                 Query.Where(x => x.NumeroExpediente == filtro.NumeroExpediente);
@@ -132,6 +137,24 @@ namespace Seje.OrdenCaptura.Api.Models
 
             if (!string.IsNullOrWhiteSpace(filtro.Descripcion))
                 Query.Where(x => x.Descripcion == filtro.Descripcion);
+        }
+    }
+
+    public class OrdenCapturaParteSpec : Specification<QueryStack.OrdenCapturaParte>, ISingleResultSpecification
+    {
+        public OrdenCapturaParteSpec(FiltrosOrdenCapturaParte filtro)
+        {
+            if (filtro.id > 0)
+                Query.Where(x => x.Id == filtro.id);
+
+            if (filtro.ParteId > 0)
+                Query.Where(x => x.ParteId == filtro.ParteId);
+
+            if (!string.IsNullOrWhiteSpace(filtro.NumeroOrdenCaptura))
+                Query.Where(x => x.NumeroOrdenCaptura == filtro.NumeroOrdenCaptura);
+
+            if (!string.IsNullOrWhiteSpace(filtro.ParteDescripcion))
+                Query.Where(x => x.ParteDescripcion == filtro.ParteDescripcion);
         }
     }
 

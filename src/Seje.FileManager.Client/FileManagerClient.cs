@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.SecurityTokenService;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Seje.FileManager.Client.Models;
 using System;
@@ -15,11 +15,14 @@ namespace Seje.FileManager.Client
     {
         private readonly HttpClient httpClient;
         private readonly ILogger<FileManagerClient> logger;
+        public IConfiguration Configuration { get; }
+        public const string SystemName = "FileManagerSettings:SystemName";
 
-        public FileManagerClient(HttpClient httpClient, ILogger<FileManagerClient> logger)
+        public FileManagerClient(HttpClient httpClient, ILogger<FileManagerClient> logger, IConfiguration configuration)
         {
             this.httpClient = httpClient;
             this.logger = logger;
+            Configuration = configuration;
         }
 
         public async Task<bool> CreateRoot(DirectoryRoot model)
@@ -72,20 +75,19 @@ namespace Seje.FileManager.Client
         public async Task<bool> UploadFile(Archivo model)
         {
             bool result = false;
+            var systemName = Configuration.GetSection(SystemName);
             try
             {
                 return await uploadFile(model);
             }
-            catch (BadRequestException bex)
-            {
-                logger.LogInformation("FileManagerClient - UploadFile: " + bex.Message);
-                var successRoot = await CreateRoot(new DirectoryRoot { DirectoryId = Guid.NewGuid(), SystemIdentifier = "OrdenCaptura" });
-                if (successRoot) result = await uploadFile(model);
-
-                return result;
-            }
             catch (Exception ex)
             {
+                if (ex.Message.Contains("Bad Request"))
+                {
+                    var successRoot = await CreateRoot(new DirectoryRoot { DirectoryId = Guid.NewGuid(), SystemIdentifier = systemName.Value });
+                    if (successRoot) result = await uploadFile(model);
+                    return result;
+                }
                 logger.LogInformation("FileManagerClient - UploadFile: " + ex.Message);
                 return result;
             }           

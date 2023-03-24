@@ -45,10 +45,10 @@ namespace Seje.OrdenCaptura.Api.Services
                 result.Entity.TotalEnRevision = ordenesCaptura?.Entity?.Where(x => x.OrdenCapturaEstadoId == (int)OrdenCapturaEstados.EnRevision).ToList().Count;
                 result.Entity.TotalPendienteDeFirma = ordenesCaptura?.Entity?.Where(x => x.OrdenCapturaEstadoId == (int)OrdenCapturaEstados.PendienteDeFirma).ToList().Count;
                 result.Entity.TotalPendienteDeEntrega = ordenesCaptura?.Entity?.Where(x => x.OrdenCapturaEstadoId == (int)OrdenCapturaEstados.PendienteDeEntrega).ToList().Count;
-                result.Entity.TotalEntregadas = ordenesCaptura?.Entity?.Where(x => x.OrdenCapturaEstadoId == (int)OrdenCapturaEstados.Entregada).ToList().Count;
+                result.Entity.TotalActivas = ordenesCaptura?.Entity?.Where(x => x.OrdenCapturaEstadoId == (int)OrdenCapturaEstados.Activa).ToList().Count;
                 result.Entity.TotalContraCapturaPendienteDeFirma = ordenesCaptura?.Entity?.Where(x => x.OrdenCapturaEstadoId == (int)OrdenCapturaEstados.ContraCapturaPendienteDeFirma).ToList().Count;
                 result.Entity.TotalContraCaptura = ordenesCaptura?.Entity?.Where(x => x.OrdenCapturaEstadoId == (int)OrdenCapturaEstados.ContraCaptura).ToList().Count;
-                result.Entity.TotalFinalizadas = ordenesCaptura?.Entity?.Where(x => x.OrdenCapturaEstadoId == (int)OrdenCapturaEstados.Finalizada).ToList().Count;
+                result.Entity.TotalEjecutadas = ordenesCaptura?.Entity?.Where(x => x.OrdenCapturaEstadoId == (int)OrdenCapturaEstados.Ejecutada).ToList().Count;
                 result.Entity.Total = ordenesCaptura?.Entity?.Count;
 
                 return result;

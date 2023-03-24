@@ -17,13 +17,13 @@ namespace Seje.OrdenCaptura.Api.Services
     public class OrdenCapturaEstadoService : IOrdenCapturaEstado
     {
         private readonly IMapper _mapper;
-        private readonly ILogger<DelitoService> _logger;
+        private readonly ILogger<OrdenCapturaEstado> _logger;
         public IMediator Mediator { get; }
         public IRepository<QueryStack.OrdenCapturaEstado> Repository { get; }
 
         public OrdenCapturaEstadoService(
         IMapper mapper,
-        ILogger<DelitoService> logger,
+        ILogger<OrdenCapturaEstado> logger,
         IMediator mediator,
         IRepository<QueryStack.OrdenCapturaEstado> repository
         )
@@ -36,19 +36,19 @@ namespace Seje.OrdenCaptura.Api.Services
         public async Task<Result<List<OrdenCapturaEstado>>> List()
         {
             var result = new Result<List<OrdenCapturaEstado>>(true, null, new List<OrdenCapturaEstado>());
-            var delitos = await Repository.ListAsync();
-            result.Entity = _mapper.Map<List<OrdenCapturaEstado>>(delitos);
+            var estados = await Repository.ListAsync();
+            result.Entity = _mapper.Map<List<OrdenCapturaEstado>>(estados);
             return result;
         }
 
-        public async Task<Result<OrdenCapturaEstado>> GetById(long delitoId)
+        public async Task<Result<OrdenCapturaEstado>> GetById(long id)
         {
             var result = new Result<OrdenCapturaEstado>(true, null, new OrdenCapturaEstado());
 
             var ct = new CancellationTokenSource();
             ct.CancelAfter(TimeSpan.FromSeconds(60));
 
-            var estado = await Repository.GetByIdAsync(delitoId,ct.Token);
+            var estado = await Repository.GetByIdAsync(id,ct.Token);
 
             if (estado == null)
             {

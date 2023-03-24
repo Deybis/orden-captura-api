@@ -87,14 +87,26 @@ namespace Seje.OrdenCaptura.Api.Controllers
             return result;
         }
 
-        [HttpPost("agregarfirmas")]
+        [HttpPost("registrarfirmas")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<Result<List<Firma>>> AgregarFirmas(AgregarFirmas model)
+        public async Task<Result<List<Firma>>> RegistrarFirmas(AgregarFirmas model)
         {
             var result = new Result<List<Firma>>(false, null, new List<Firma>());
             if (ModelState.IsValid)
             {
-                result = await _ordenCapturaService.AgregarFirmas(model.NumeroOrdenCaptura, model.NumeroFirmas, UserName);
+                result = await _ordenCapturaService.RegistrarFirmas(model.NumeroOrdenCaptura, model.NumeroFirmas, UserName);
+            }
+            return result;
+        }
+
+        [HttpPost("registrarpartes")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<Result<OrdenCapturaParte>> RegistrarPartes(OrdenCapturaParte model)
+        {
+            var result = new Result<OrdenCapturaParte>(false, null, new OrdenCapturaParte());
+            if (ModelState.IsValid)
+            {
+                result = await _ordenCapturaService.RegistrarPartes(model, UserName);
             }
             return result;
         }

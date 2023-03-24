@@ -7,10 +7,10 @@
         Rechazada = 3,
         PendienteDeFirma = 4,
         PendienteDeEntrega = 5,
-        Entregada = 6,
+        Activa = 6,
         ContraCapturaPendienteDeFirma = 7,
         ContraCaptura = 8,
-        Finalizada = 9
+        Ejecutada = 9
     }
     public enum TipoFirmas
     {

@@ -12,10 +12,10 @@ namespace Seje.OrdenCaptura.Api.Models
         public int? TotalEnRevision { get; set; }
         public int? TotalPendienteDeFirma { get; set; }
         public int? TotalPendienteDeEntrega { get; set; }
-        public int? TotalEntregadas { get; set; }
+        public int? TotalActivas { get; set; }
         public int? TotalContraCapturaPendienteDeFirma { get; set; }
         public int? TotalContraCaptura { get; set; }
-        public int? TotalFinalizadas { get; set; }
+        public int? TotalEjecutadas { get; set; }
         public int? Total { get; set; }
     }
 }

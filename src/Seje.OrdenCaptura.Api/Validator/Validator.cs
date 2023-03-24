@@ -80,6 +80,25 @@ namespace Seje.OrdenCaptura.Api.Validator
         }
     }
 
+    public class RegistrarOrdenCapturaParteValidator : AbstractValidator<OrdenCapturaParte>
+    {
+        public RegistrarOrdenCapturaParteValidator()
+        {
+            RuleFor(x => x.ParteId).NotNull().NotEmpty().WithMessage("Por favor ingrese el id de la parte.");
+            RuleFor(x => x.ParteDescripcion).NotNull().NotEmpty().WithMessage("Por favor ingrese la descipción de la parte.");
+            RuleFor(x => x.NumeroOrdenCaptura).NotNull().NotEmpty().WithMessage("Por favor ingrese el numero de orden de captura.");
+        }
+    }
+
+    public class ActualizarOrdenCapturaParteValidator : AbstractValidator<OrdenCapturaParte>
+    {
+        public ActualizarOrdenCapturaParteValidator()
+        {
+            RuleFor(x => x.Id).NotNull().NotEmpty().WithMessage("Por favor ingrese el id.");
+            RuleFor(x => x.ParteId).NotNull().NotEmpty().WithMessage("Por favor ingrese el id de la parte.");
+        }
+    }
+
     public class ActualizarOrdenCapturaEstadoValidator : AbstractValidator<OrdenCapturaEstado>
     {
         public ActualizarOrdenCapturaEstadoValidator()

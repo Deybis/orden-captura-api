@@ -45,8 +45,9 @@ namespace Seje.OrdenCaptura.Api.Services
         public const string LogoFilePath = "LogoFilePath";
         public IMediator Mediator { get; }
         public IRepository<QueryStack.Firma> FirmaRepository { get; }
+        public IRepository<QueryStack.OrdenCapturaParte> OrdenCapturaParteRepository { get; }
         public IRepository<QueryStack.OrdenCaptura> Repository { get; }
-        public IConfiguration _configuration { get; }
+        public IConfiguration Configuration { get; }
 
 
         public OrdenCapturaService(
@@ -55,6 +56,7 @@ namespace Seje.OrdenCaptura.Api.Services
         IMediator mediator,
         IRepository<QueryStack.OrdenCaptura> repository,
         IRepository<QueryStack.Firma> firmaRepository,
+        IRepository<QueryStack.OrdenCapturaParte> ordenCapturaParteRepository,
         IHttpContextAccessor httpContextAccessor,
         IFirmaDigitalClient firmaDigitalClient,
         IFileManagerClient fileManagerClient,
@@ -70,6 +72,7 @@ namespace Seje.OrdenCaptura.Api.Services
             Mediator = mediator;
             Repository = repository;
             FirmaRepository = firmaRepository;
+            OrdenCapturaParteRepository = ordenCapturaParteRepository;
             int.TryParse(httpContextAccessor.HttpContext.Request.Headers["organo_jurisdiccional_id"].FirstOrDefault(), out int value);
             OrganoJurisdiccional = value;
             _firmaDigitalClient = firmaDigitalClient;
@@ -77,13 +80,13 @@ namespace Seje.OrdenCaptura.Api.Services
             _fileManagerClient = fileManagerClient;
             _authorizationService = authorizationService;
             _tipoFirmaService = tipoFirmaService;
-            _configuration = configuration;
+            Configuration = configuration;
             _converter = converter;
         }
         public async Task<Result<List<OrdenCaptura>>> List()
         {
-            var result = new Result<List<OrdenCaptura>>(true, null, new List<OrdenCaptura>());
-            var ordenesCaptura = await Repository.ListAsync();
+            Result<List<OrdenCaptura>> result = new(true, null, new List<OrdenCaptura>());
+            List<QueryStack.OrdenCaptura> ordenesCaptura = await Repository.ListAsync();
             result.Entity = _mapper.Map<List<OrdenCaptura>>(ordenesCaptura.OrderByDescending(x => x.OrdenCapturaId));
             return result;
         }
@@ -96,14 +99,14 @@ namespace Seje.OrdenCaptura.Api.Services
 
             filtros.OrganoJurisdiccionalId = OrganoJurisdiccional;
 
-            var ct = new CancellationTokenSource();
+            CancellationTokenSource ct = new CancellationTokenSource();
             ct.CancelAfter(TimeSpan.FromSeconds(60));
 
-            var ordenes = await Repository.ListAsync(new OrdenCapturaSpec(filtros), ct.Token);
+            List<QueryStack.OrdenCaptura> ordenes = await Repository.ListAsync(new OrdenCapturaSpec(filtros), ct.Token);
             ordenes = await FiltrarOrdenCapturaPermiso(ordenes, userName);
             response.TotalCount = ordenes.Count();
 
-            var skip = (filtros.PageNumber - 1) * filtros.PageSize;
+            int skip = (filtros.PageNumber - 1) * filtros.PageSize;
             var take = filtros.PageSize;
 
             response.Result = _mapper.Map<List<OrdenCaptura>>(ordenes.Skip(skip).Take(take));
@@ -114,7 +117,7 @@ namespace Seje.OrdenCaptura.Api.Services
 
         public async Task<Result<OrdenCaptura>> GetById(long ordenCapturaId)
         {
-            var result = new Result<OrdenCaptura>(true, null, new OrdenCaptura());
+            Result<OrdenCaptura> result = new(true, null, new OrdenCaptura());
 
             var ct = new CancellationTokenSource();
             ct.CancelAfter(TimeSpan.FromSeconds(60));
@@ -134,12 +137,12 @@ namespace Seje.OrdenCaptura.Api.Services
 
         public async Task<Result<List<OrdenCaptura>>> GetByFilter(FiltrosOrdenCaptura filtros)
         {
-            var result = new Result<List<OrdenCaptura>>(true, null, new List<OrdenCaptura>());
+            Result<List<OrdenCaptura>> result = new(true, null, new List<OrdenCaptura>());
 
             var ct = new CancellationTokenSource();
             ct.CancelAfter(TimeSpan.FromSeconds(60));
 
-            var ordenesCaptura = await Repository.ListAsync(new OrdenCapturaSpec(filtros), ct.Token);
+            List<QueryStack.OrdenCaptura> ordenesCaptura = await Repository.ListAsync(new OrdenCapturaSpec(filtros), ct.Token);
             result.Message = !ordenesCaptura.Any() ? "No se encontró ordenes de captura con la información proporcionada" : string.Empty;
 
             result.Entity = ordenesCaptura.Any() ? _mapper.Map<List<OrdenCaptura>>(ordenesCaptura.OrderByDescending(x => x.OrdenCapturaId)) : result.Entity;
@@ -148,7 +151,7 @@ namespace Seje.OrdenCaptura.Api.Services
 
         public async Task<Result<OrdenCaptura>> Create(RegistrarOrdenCaptura model, string userName)
         {
-            var result = new Result<OrdenCaptura>(false, null, new OrdenCaptura());
+            Result<OrdenCaptura> result = new(false, null, new OrdenCaptura());
             try
             {
                 var validator = new RegistrarOrdenCapturaValidator();
@@ -159,16 +162,17 @@ namespace Seje.OrdenCaptura.Api.Services
                 var ct = new CancellationTokenSource();
                 ct.CancelAfter(TimeSpan.FromSeconds(60));
 
-                var ordenesCaptura = await Repository.ListAsync(new OrdenCapturaSpec(new FiltrosOrdenCaptura
+                List<QueryStack.OrdenCaptura> ordenesCaptura = await Repository.ListAsync(new OrdenCapturaSpec(new FiltrosOrdenCaptura
                 {
                     NumeroExpediente = model.NumeroExpediente,
+                    ParteId = model.ParteId
                 }), ct.Token);
 
-                var ordenCapturaVigente = ordenesCaptura.Where(x => x.OrdenCapturaEstadoId != (int)OrdenCapturaEstados.Finalizada).ToList();
+                List<QueryStack.OrdenCaptura> ordenCapturaVigente = ordenesCaptura.Where(x => x.OrdenCapturaEstadoId != (int)OrdenCapturaEstados.Ejecutada).ToList();
 
                 if (ordenCapturaVigente.Any())
                 {
-                    result.Message = $"Existe una orden de captura vigente para el expediente: {model.NumeroExpediente}";
+                    result.Message = $"Existe una orden de captura con la información proporcionada";
                     result.Success = false;
                     return result;
                 }
@@ -213,7 +217,7 @@ namespace Seje.OrdenCaptura.Api.Services
 
         public async Task<Result<OrdenCaptura>> Update(ActualizarOrdenCaptura model, string userName)
         {
-            var result = new Result<OrdenCaptura>(true, null, new OrdenCaptura());
+            Result<OrdenCaptura> result = new(false, null, new OrdenCaptura());
             try
             {
                 var validator = new ActualizarOrdenCapturaValidator();
@@ -247,6 +251,7 @@ namespace Seje.OrdenCaptura.Api.Services
                 await Mediator.Send(command);
 
                 result.Entity = _mapper.Map<OrdenCaptura>(model);
+                result.Success = true;
                 return result;
 
             }
@@ -259,9 +264,45 @@ namespace Seje.OrdenCaptura.Api.Services
             }
         }
 
-        public async Task<Result<List<Firma>>> AgregarFirmas(string numeroOrdenCaptura, int numeroFirmas, string userName)
+        public async Task<Result<OrdenCapturaParte>> RegistrarPartes(OrdenCapturaParte model, string userName)
         {
-            var result = new Result<List<Firma>>(false, null, new List<Firma>());
+            Result<OrdenCapturaParte> result = new(false, null, new OrdenCapturaParte());
+
+            try
+            {
+                var ct = new CancellationTokenSource();
+                ct.CancelAfter(TimeSpan.FromSeconds(60));
+
+                var orden = await Repository.GetBySpecAsync(new OrdenCapturaSpec(new FiltrosOrdenCaptura { NumeroOrdenCaptura = model.NumeroOrdenCaptura }));
+                if (orden == null)
+                {
+                    result.Success = false;
+                    return result;
+                }
+                var entity = _mapper.Map<QueryStack.OrdenCapturaParte>(model);
+                entity.OrdenCapturaId = orden.OrdenCapturaId;
+                entity.FechaCreacion = DateTime.Now;
+                entity.UsuarioCreacion = userName;
+                entity.FechaModificacion = DateTime.Now;
+                entity.UsuarioModificacion = userName;
+
+                var create = await OrdenCapturaParteRepository.AddAsync(entity, ct.Token);
+                result.Entity = _mapper.Map<OrdenCapturaParte>(create);
+                result.Success = true;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                result.Success = false;
+                result.Message = ex.Message;
+                return result;
+            }
+        }
+
+        public async Task<Result<List<Firma>>> RegistrarFirmas(string numeroOrdenCaptura, int numeroFirmas, string userName)
+        {
+            Result<List<Firma>> result = new(false, null, new List<Firma>());
             try
             {
                 var orden = await Repository.GetBySpecAsync(new OrdenCapturaSpec(new FiltrosOrdenCaptura { NumeroOrdenCaptura = numeroOrdenCaptura }));
@@ -304,14 +345,13 @@ namespace Seje.OrdenCaptura.Api.Services
 
         public async Task<Result<FirmaResponse>> Firmar(FirmaRequest model, string userName)
         {
-            _logger.LogInformation("Entró a firmar");
-            var result = new Result<FirmaResponse>(false, null, new FirmaResponse());
-            List<OrdenCapturaPDF> documentos = new List<OrdenCapturaPDF>();
+            Result<FirmaResponse> result = new(false, null, new FirmaResponse());
+            List<OrdenCapturaPDF> documentos = new();
             int firmasRealizadas = 0;
             try
             {
                 #region Generar/Obtener Documentos
-                var firmasOrdenCaptura = await FirmaRepository.ListAsync(new FirmaSpec(new FiltrosFirma
+                List<QueryStack.Firma> firmasOrdenCaptura = await FirmaRepository.ListAsync(new FirmaSpec(new FiltrosFirma
                 {
                     TipoFirmaId = model.TipoFirma,
                     NumeroOrdenCaptura = model.OrdenCapturaFormato.NumeroOrdenCaptura
@@ -325,7 +365,6 @@ namespace Seje.OrdenCaptura.Api.Services
                 #region FirmarDocumentos
                 foreach (var doc in documentos)
                 {
-                    _logger.LogInformation($"Firmando documento: {doc.FileName}");
                     model.File = doc.PdfBase64;
                     result = await _firmaDigitalClient.Firmar(model);
                     doc.PdfBase64 = result.Entity.File; //--> Documento firmado
@@ -349,7 +388,7 @@ namespace Seje.OrdenCaptura.Api.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Ocurrio un error al momento de firmar: {ex.Message}");
                 result.Success = false;
                 return result;
             }
@@ -408,7 +447,7 @@ namespace Seje.OrdenCaptura.Api.Services
             }
             catch (Exception ex)
             {
-                _logger.LogInformation($"Error al generar documento:{ex.Message}");
+                _logger.LogInformation($"Ocurrio un error al generar documentos:{ex.Message}");
                 return documentos;
             }
         }
@@ -429,7 +468,7 @@ namespace Seje.OrdenCaptura.Api.Services
                         FilePath = documento.FilePath,
                         UserName = userName ?? "anonimo",
                         FileName = documento.FileName,
-                        SourceSystem = _configuration.GetValue<string>(SystemName),
+                        SourceSystem = Configuration.GetValue<string>(SystemName),
                         DocumentExtension = ".pdf"
                     };
                     documento.FileName = archivo.FileName;
@@ -439,7 +478,7 @@ namespace Seje.OrdenCaptura.Api.Services
                     #region Guardar referencia en entidad documentos del componente
                     if (result)
                     {
-                        FileInfo fileInfo = new FileInfo(documento.FilePath);
+                        FileInfo fileInfo = new(documento.FilePath);
                         Documento doc = new Documento
                         {
                             Codigo = archivo.Id,
@@ -558,7 +597,7 @@ namespace Seje.OrdenCaptura.Api.Services
             {
                 if (!string.IsNullOrWhiteSpace(doc.PdfBase64))
                 {
-                    string directory = Path.Combine(_configuration.GetValue<string>(LocalFilePath), $"{numeroOrdenCaptura}");
+                    string directory = Path.Combine(Configuration.GetValue<string>(LocalFilePath), $"{numeroOrdenCaptura}");
                     doc.FilePath = Path.Combine(directory, doc.FileName);
                     Directory.CreateDirectory(directory);
                     File.WriteAllBytes(doc.FilePath, Convert.FromBase64String(doc.PdfBase64));
@@ -574,7 +613,7 @@ namespace Seje.OrdenCaptura.Api.Services
         {
             try
             {
-                string directory = Path.Combine(_configuration.GetValue<string>(LocalFilePath), $"{numeroOrdenCaptura}");
+                string directory = Path.Combine(Configuration.GetValue<string>(LocalFilePath), $"{numeroOrdenCaptura}");
                 if (Directory.Exists(directory))
                     Directory.Delete(directory, true);
             }
@@ -586,7 +625,7 @@ namespace Seje.OrdenCaptura.Api.Services
 
         private static string GenerarQR(string secureQRCode)
         {
-            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeGenerator qrGenerator = new();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(secureQRCode, QRCodeGenerator.ECCLevel.Q);
             return new Base64QRCode(qrCodeData).GetGraphic(20);
         }
@@ -596,7 +635,7 @@ namespace Seje.OrdenCaptura.Api.Services
             string logo = string.Empty;
             try
             {
-                string logoUrl = _configuration.GetValue<string>(LogoFilePath);
+                string logoUrl = Configuration.GetValue<string>(LogoFilePath);
                 using (Image image = Image.FromFile(logoUrl))
                 {
                     using MemoryStream m = new();
@@ -617,7 +656,7 @@ namespace Seje.OrdenCaptura.Api.Services
         {
             List<QueryStack.OrdenCaptura> ordenesFiltradas = new();
 
-            var permisos = await _authorizationService.GetPermissionsBy(userName, _configuration.GetValue<string>(Component));
+            var permisos = await _authorizationService.GetPermissionsBy(userName, Configuration.GetValue<string>(Component));
 
             foreach (var permiso in permisos)
             {

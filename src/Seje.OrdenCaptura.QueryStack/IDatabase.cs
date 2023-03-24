@@ -8,6 +8,7 @@ namespace Seje.OrdenCaptura.QueryStack
         IQueryable<Parte> Partes { get; }
         IQueryable<Delito> Delitos { get; }
         IQueryable<OrdenCapturaEstado> OrdenCapturaEstados { get; }
+        IQueryable<OrdenCapturaParte> OrdenCapturaPartes { get; }
         IQueryable<TipoFirma> TipoFirmas { get; }
         IQueryable<Firma> Firmas { get; }
         IQueryable<Configuracion> Configuraciones { get; }

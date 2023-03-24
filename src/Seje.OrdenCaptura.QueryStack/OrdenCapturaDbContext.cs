@@ -17,6 +17,7 @@ namespace Seje.OrdenCaptura.QueryStack
         public virtual DbSet<Parte> Partes { get; set; }
         public virtual DbSet<Delito> Delitos { get; set; }
         public virtual DbSet<OrdenCapturaEstado> OrdenCapturaEstados { get; set; }
+        public virtual DbSet<OrdenCapturaParte> OrdenCapturaPartes { get; set; }
         public virtual DbSet<TipoFirma> TipoFirmas { get; set; }
         public virtual DbSet<Firma> Firmas { get; set; }
         public virtual DbSet<Configuracion> Configuraciones { get; set; }

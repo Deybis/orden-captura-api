@@ -54,24 +54,24 @@ namespace Seje.OrdenCaptura.Api.Controllers
 
         [HttpPost("create")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<Result<OrdenCapturaEstado>> Create(OrdenCapturaEstado delito)
+        public async Task<Result<OrdenCapturaEstado>> Create(OrdenCapturaEstado estado)
         {
-            var result = new Result<OrdenCapturaEstado>(true, null, new OrdenCapturaEstado());
+            var result = new Result<OrdenCapturaEstado>(false, null, new OrdenCapturaEstado());
             if (ModelState.IsValid)
             {
-                result = await _ordenCapturaEstadoService.Create(delito, UserName);
+                result = await _ordenCapturaEstadoService.Create(estado, UserName);
             }
             return result;
         }
 
         [HttpPut("update")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<Result<OrdenCapturaEstado>> Update(OrdenCapturaEstado delito)
+        public async Task<Result<OrdenCapturaEstado>> Update(OrdenCapturaEstado estado)
         {
-            var result = new Result<OrdenCapturaEstado>(true, null, new OrdenCapturaEstado());
+            var result = new Result<OrdenCapturaEstado>(false, null, new OrdenCapturaEstado());
             if (ModelState.IsValid)
             {
-                result = await _ordenCapturaEstadoService.Update(delito, UserName);
+                result = await _ordenCapturaEstadoService.Update(estado, UserName);
             }
             return result;
         }

@@ -24,9 +24,12 @@ namespace Seje.OrdenCaptura.Api
         public string DepartamentoDescripcion { get; set; }
         public int MunicipioId { get; set; }
         public string MunicipioDescripcion { get; set; }
+        public int ParteId { get; set; }
+        public string ParteDescripcion { get; set; }
         public string Observaciones { get; set; }
         public DateTime FechaEmision { get; set; }
         public DateTime FechaEntrega { get; set; }
+        public OrdenCapturaParte OrdenCapturaParte { get; set; }
     }
 
     public class RegistrarOrdenCaptura
@@ -77,6 +80,13 @@ namespace Seje.OrdenCaptura.Api
 
         [Required]
         public string MunicipioDescripcion { get; set; }
+
+        [Required]
+        public int ParteId { get; set; }
+
+        [Required]
+        public string ParteDescripcion { get; set; }
+
     }
     public class ActualizarOrdenCaptura
     {

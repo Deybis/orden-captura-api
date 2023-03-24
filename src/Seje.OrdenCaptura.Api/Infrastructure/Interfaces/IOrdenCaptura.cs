@@ -14,7 +14,8 @@ namespace Seje.OrdenCaptura.Api.Infrastructure.Interfaces
         Task<Result<List<OrdenCaptura>>> GetByFilter(FiltrosOrdenCaptura filtros);
         Task<Result<OrdenCaptura>> Create(RegistrarOrdenCaptura model, string userName);
         Task<Result<OrdenCaptura>> Update(ActualizarOrdenCaptura model, string userName);
-        Task<Result<List<Firma>>> AgregarFirmas(string numeroOrdenCaptura,int numeroFirmas, string userName);
+        Task<Result<List<Firma>>> RegistrarFirmas(string numeroOrdenCaptura,int numeroFirmas, string userName);
+        Task<Result<OrdenCapturaParte>> RegistrarPartes(OrdenCapturaParte model, string userName);
         Task<Result<FirmaResponse>> Firmar(FirmaRequest request, string userName);
     }
 }

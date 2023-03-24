@@ -10,7 +10,7 @@ using Seje.OrdenCaptura.QueryStack;
 namespace Seje.OrdenCaptura.Api.Migrations
 {
     [DbContext(typeof(OrdenCapturaDbContext))]
-    [Migration("20230301132220_InitialMigration")]
+    [Migration("20230323162949_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -410,6 +410,50 @@ namespace Seje.OrdenCaptura.Api.Migrations
                     b.ToTable("OrdenCapturaEstados");
                 });
 
+            modelBuilder.Entity("Seje.OrdenCaptura.QueryStack.OrdenCapturaParte", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaModificacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NumeroOrdenCaptura")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("OrdenCapturaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ParteDescripcion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ParteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<string>("UsuarioModificacion")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrdenCapturaId")
+                        .IsUnique();
+
+                    b.ToTable("OrdenCapturaPartes");
+                });
+
             modelBuilder.Entity("Seje.OrdenCaptura.QueryStack.Parte", b =>
                 {
                     b.Property<int>("ParteId")
@@ -584,6 +628,17 @@ namespace Seje.OrdenCaptura.Api.Migrations
                     b.Navigation("OrdenCapturaEstado");
                 });
 
+            modelBuilder.Entity("Seje.OrdenCaptura.QueryStack.OrdenCapturaParte", b =>
+                {
+                    b.HasOne("Seje.OrdenCaptura.QueryStack.OrdenCaptura", "OrdenCaptura")
+                        .WithOne("OrdenCapturaParte")
+                        .HasForeignKey("Seje.OrdenCaptura.QueryStack.OrdenCapturaParte", "OrdenCapturaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OrdenCaptura");
+                });
+
             modelBuilder.Entity("Seje.OrdenCaptura.QueryStack.Parte", b =>
                 {
                     b.HasOne("Seje.OrdenCaptura.QueryStack.Expediente", "Expediente")
@@ -605,6 +660,8 @@ namespace Seje.OrdenCaptura.Api.Migrations
                     b.Navigation("Documentos");
 
                     b.Navigation("Firmas");
+
+                    b.Navigation("OrdenCapturaParte");
                 });
 #pragma warning restore 612, 618
         }

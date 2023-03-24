@@ -68,7 +68,8 @@ namespace Seje.OrdenCaptura.QueryStack
         [Required]
         public DateTime FechaEmision { get; set; }
         public DateTime FechaEntrega { get; set; }
-        public OrdenCapturaEstado OrdenCapturaEstado { get; set; }
+        public virtual OrdenCapturaEstado OrdenCapturaEstado { get; set; }
+        public virtual OrdenCapturaParte OrdenCapturaParte { get; set; }
         public virtual List<Firma> Firmas { get; set; } = new List<Firma>();
         public virtual List<Documento> Documentos { get; set; } = new List<Documento>();
     }

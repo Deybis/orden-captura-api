@@ -282,6 +282,32 @@ namespace Seje.OrdenCaptura.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "OrdenCapturaPartes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrdenCapturaId = table.Column<long>(type: "bigint", nullable: false),
+                    NumeroOrdenCaptura = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ParteId = table.Column<int>(type: "int", nullable: false),
+                    ParteDescripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UsuarioCreacion = table.Column<string>(type: "nvarchar(254)", maxLength: 254, nullable: false),
+                    FechaModificacion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UsuarioModificacion = table.Column<string>(type: "nvarchar(254)", maxLength: 254, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrdenCapturaPartes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrdenCapturaPartes_OrdenesCaptura_OrdenCapturaId",
+                        column: x => x.OrdenCapturaId,
+                        principalTable: "OrdenesCaptura",
+                        principalColumn: "OrdenCapturaId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Configuraciones_Nombre",
                 table: "Configuraciones",
@@ -320,6 +346,12 @@ namespace Seje.OrdenCaptura.Api.Migrations
                 column: "TipoFirmaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrdenCapturaPartes_OrdenCapturaId",
+                table: "OrdenCapturaPartes",
+                column: "OrdenCapturaId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrdenesCaptura_OrdenCapturaEstadoId",
                 table: "OrdenesCaptura",
                 column: "OrdenCapturaEstadoId");
@@ -348,16 +380,19 @@ namespace Seje.OrdenCaptura.Api.Migrations
                 name: "Firmas");
 
             migrationBuilder.DropTable(
+                name: "OrdenCapturaPartes");
+
+            migrationBuilder.DropTable(
                 name: "Partes");
 
             migrationBuilder.DropTable(
                 name: "TipoDocumentos");
 
             migrationBuilder.DropTable(
-                name: "OrdenesCaptura");
+                name: "TipoFirmas");
 
             migrationBuilder.DropTable(
-                name: "TipoFirmas");
+                name: "OrdenesCaptura");
 
             migrationBuilder.DropTable(
                 name: "Expedientes");

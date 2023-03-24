@@ -7,7 +7,7 @@ namespace Seje.OrdenCaptura.Api.Infrastructure.Interfaces
     public interface IOrdenCapturaEstado
     {
         Task<Result<List<OrdenCapturaEstado>>> List();
-        Task<Result<OrdenCapturaEstado>> GetById(long delitoId);
+        Task<Result<OrdenCapturaEstado>> GetById(long id);
         Task<Result<List<OrdenCapturaEstado>>> GetByFilter(FiltrosOrdenCapturaEstado filtros);
         Task<Result<OrdenCapturaEstado>> Create(OrdenCapturaEstado model, string userName);
         Task<Result<OrdenCapturaEstado>> Update(OrdenCapturaEstado model, string userName);

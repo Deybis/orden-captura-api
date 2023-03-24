@@ -33,6 +33,7 @@ namespace Seje.OrdenCaptura.Api.Mapper
             CreateMap<QueryStack.Parte, ActualizarParte>().ReverseMap().ForAllMembers(x => x.AllowNull());
             CreateMap<Parte, ActualizarParte>().ReverseMap().ForAllMembers(x => x.AllowNull());
             CreateMap<Parte, RegistrarParte>().ReverseMap().ForAllMembers(x => x.AllowNull());
+            CreateMap<QueryStack.OrdenCapturaParte, OrdenCapturaParte>().ReverseMap().ForAllMembers(x => x.AllowNull());
 
             CreateMap<QueryStack.OrdenCapturaEstado, OrdenCapturaEstado>().ReverseMap().ForAllMembers(x => x.AllowNull());
             CreateMap<QueryStack.Firma, Firma>().ReverseMap().ForAllMembers(x => x.AllowNull());

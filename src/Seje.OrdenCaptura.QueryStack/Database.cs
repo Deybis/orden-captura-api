@@ -17,6 +17,7 @@ namespace Seje.OrdenCaptura.QueryStack
         public IQueryable<Parte> Partes => context.Partes.AsNoTracking();
         public IQueryable<Delito> Delitos => context.Delitos.AsNoTracking();
         public IQueryable<OrdenCapturaEstado> OrdenCapturaEstados => context.OrdenCapturaEstados.AsNoTracking();
+        public IQueryable<OrdenCapturaParte> OrdenCapturaPartes => context.OrdenCapturaPartes.AsNoTracking();
         public IQueryable<TipoFirma> TipoFirmas => context.TipoFirmas.AsNoTracking();
         public IQueryable<Firma> Firmas => context.Firmas.AsNoTracking();
         public IQueryable<Configuracion> Configuraciones => context.Configuraciones.AsNoTracking();

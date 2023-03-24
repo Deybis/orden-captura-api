@@ -57,7 +57,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<Result<Firma>> Create(Firma firma)
         {
-            var result = new Result<Firma>(true, null, new Firma());
+            var result = new Result<Firma>(false, null, new Firma());
             if (ModelState.IsValid)
             {
                 result = await _firmaService.Create(firma, UserName);
@@ -69,7 +69,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<Result<Firma>> Update(Firma firma)
         {
-            var result = new Result<Firma>(true, null, new Firma());
+            var result = new Result<Firma>(false, null, new Firma());
             if (ModelState.IsValid)
             {
                 result = await _firmaService.Update(firma, UserName);
