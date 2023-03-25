@@ -21,6 +21,7 @@ namespace Seje.OrdenCaptura.Api
         public string FechaEntrega { get; set; }
         public string AñoActual { get; set; }
         public int Mes { get; set; }
+        public string NombreImputado { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
     }
@@ -63,10 +64,12 @@ namespace Seje.OrdenCaptura.Api
 
     public class FiltrosOrdenCapturaParte
     {
-        public int id { get; set; }
+        public int Id { get; set; }
         public int ParteId { get; set; }
         public string NumeroOrdenCaptura { get; set; }
-        public string ParteDescripcion { get; set; }
+        public string TipoParteId { get; set; }
+        public string TipoParteDescripcion { get; set; }
+        public string Nombre { get; set; }
     }
 
     public class FiltrosFirma
@@ -124,5 +127,11 @@ namespace Seje.OrdenCaptura.Api
         public int Año { get; set; }
         public int Mes { get; set; }
         public int OrganoJurisdiccionalId { get; set; }
+    }
+
+    public class FiltrosConsultaOrdenCaptura
+    {
+        public string Campo { get; set; }
+        public string Valor { get; set; }
     }
 }

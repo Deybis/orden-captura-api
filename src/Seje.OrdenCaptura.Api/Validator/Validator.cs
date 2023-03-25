@@ -85,7 +85,7 @@ namespace Seje.OrdenCaptura.Api.Validator
         public RegistrarOrdenCapturaParteValidator()
         {
             RuleFor(x => x.ParteId).NotNull().NotEmpty().WithMessage("Por favor ingrese el id de la parte.");
-            RuleFor(x => x.ParteDescripcion).NotNull().NotEmpty().WithMessage("Por favor ingrese la descipción de la parte.");
+            RuleFor(x => x.Nombre).NotNull().NotEmpty().WithMessage("Por favor ingrese el nombre.");
             RuleFor(x => x.NumeroOrdenCaptura).NotNull().NotEmpty().WithMessage("Por favor ingrese el numero de orden de captura.");
         }
     }

@@ -415,11 +415,23 @@ namespace Seje.OrdenCaptura.Api.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Domicilio")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("FechaModificacion")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaNacimiento")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NumeroIdentificacion")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NumeroOrdenCaptura")
                         .IsRequired()
@@ -428,10 +440,13 @@ namespace Seje.OrdenCaptura.Api.Migrations
                     b.Property<long>("OrdenCapturaId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("ParteDescripcion")
+                    b.Property<int>("ParteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TipoParteDescripcion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ParteId")
+                    b.Property<int>("TipoParteId")
                         .HasColumnType("int");
 
                     b.Property<string>("UsuarioCreacion")

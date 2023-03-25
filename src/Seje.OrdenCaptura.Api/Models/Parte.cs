@@ -12,7 +12,6 @@ namespace Seje.OrdenCaptura.Api
 
         [Required]
         public string Nombre { get; set; }
-        public string NumeroIdentidad { get; set; }
 
         [Required]
         public string Domicilio { get; set; }

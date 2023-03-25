@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Seje.OrdenCaptura.Api
 {
@@ -14,6 +15,11 @@ namespace Seje.OrdenCaptura.Api
 
         [Required]
         public int ParteId { get; set; }
-        public string ParteDescripcion { get; set; }
+        public int TipoParteId { get; set; }
+        public string TipoParteDescripcion { get; set; }
+        public string Nombre { get; set; }
+        public string NumeroIdentificacion { get; set; }
+        public string Domicilio { get; set; }
+        public DateTime FechaNacimiento { get; set; }
     }
 }

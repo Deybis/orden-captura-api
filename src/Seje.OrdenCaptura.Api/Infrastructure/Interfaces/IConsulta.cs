@@ -6,7 +6,8 @@ namespace Seje.OrdenCaptura.Api.Infrastructure.Interfaces
 {
     public interface IConsulta
     {
-        Task<Result<Seje.Expediente.Client.Models.Expediente>> GetExpediente(string numeroExpediente);
+        //Task<Result<Seje.Expediente.Client.Models.Expediente>> GetExpediente(string numeroExpediente);
         Task<Result<Models.Estadistica>> GetEstadisticas(FiltrosEstadistica filtros);
+        Task<Result<List<OrdenCaptura>>> ConsultaOrdenCaptura(FiltrosConsultaOrdenCaptura filtros);
     }
 }

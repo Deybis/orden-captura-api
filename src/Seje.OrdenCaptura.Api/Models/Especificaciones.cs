@@ -9,8 +9,6 @@ namespace Seje.OrdenCaptura.Api.Models
         public OrdenCapturaSpec(FiltrosOrdenCaptura filtro)
         {
             Query.Include(x => x.OrdenCapturaParte);
-            Query.Include(x => x.Firmas);
-            Query.Include(x => x.Documentos);
 
             if (filtro.OrdenCapturaId > 0)
                 Query.Where(x => x.OrdenCapturaId == filtro.OrdenCapturaId);
@@ -20,6 +18,9 @@ namespace Seje.OrdenCaptura.Api.Models
 
             if (!string.IsNullOrWhiteSpace(filtro.NumeroExpediente))
                 Query.Where(x => x.NumeroExpediente == filtro.NumeroExpediente);
+
+            if (!string.IsNullOrWhiteSpace(filtro.NombreImputado))
+                Query.Where(x => x.OrdenCapturaParte.Nombre.Contains(filtro.NombreImputado));
 
             if (!string.IsNullOrWhiteSpace(filtro.NumeroOrdenCaptura))
                 Query.Where(x => x.NumeroOrdenCaptura == filtro.NumeroOrdenCaptura);
@@ -32,6 +33,9 @@ namespace Seje.OrdenCaptura.Api.Models
 
             if (filtro.Mes > 0)
                 Query.Where(x => x.FechaEmision.Month == filtro.Mes);
+
+            if (filtro.OrdenCapturaEstadoId > 0)
+                Query.Where(x => x.OrdenCapturaEstadoId == filtro.OrdenCapturaEstadoId);
 
             if (!string.IsNullOrWhiteSpace(filtro.CorreoEscribiente) || !string.IsNullOrWhiteSpace(filtro.CorreoEscribiente) || !string.IsNullOrWhiteSpace(filtro.CorreoEscribiente))
                 Query.Where(x => x.CorreoEscribiente == filtro.CorreoEscribiente || x.CorreoJuez == filtro.CorreoJuez || x.CorreoSecretario == filtro.CorreoSecretario);
@@ -144,8 +148,8 @@ namespace Seje.OrdenCaptura.Api.Models
     {
         public OrdenCapturaParteSpec(FiltrosOrdenCapturaParte filtro)
         {
-            if (filtro.id > 0)
-                Query.Where(x => x.Id == filtro.id);
+            if (filtro.Id > 0)
+                Query.Where(x => x.Id == filtro.Id);
 
             if (filtro.ParteId > 0)
                 Query.Where(x => x.ParteId == filtro.ParteId);
@@ -153,8 +157,11 @@ namespace Seje.OrdenCaptura.Api.Models
             if (!string.IsNullOrWhiteSpace(filtro.NumeroOrdenCaptura))
                 Query.Where(x => x.NumeroOrdenCaptura == filtro.NumeroOrdenCaptura);
 
-            if (!string.IsNullOrWhiteSpace(filtro.ParteDescripcion))
-                Query.Where(x => x.ParteDescripcion == filtro.ParteDescripcion);
+            if (!string.IsNullOrWhiteSpace(filtro.TipoParteDescripcion))
+                Query.Where(x => x.TipoParteDescripcion == filtro.TipoParteDescripcion);
+
+            if (!string.IsNullOrWhiteSpace(filtro.Nombre))
+                Query.Where(x => x.Nombre == filtro.Nombre);
         }
     }
 
