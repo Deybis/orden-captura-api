@@ -182,6 +182,7 @@ namespace Seje.OrdenCaptura.Api.Services
                 var ordenCapturaCodigo = Guid.NewGuid();
                 var command = new CommandStack.Commands.RegistrarOrdenCapturaCommand(0,
                     model.OrganoJurisdiccionalId,
+                    model.OrganoJurisdiccionalDescripcion,
                     ordenCapturaCodigo,
                     model.NumeroOrdenCaptura,
                     model.Correlativo,
@@ -227,6 +228,7 @@ namespace Seje.OrdenCaptura.Api.Services
 
                 var command = new CommandStack.Commands.ModificarOrdenCapturaCommand(model.OrdenCapturaId,
                     model.OrganoJurisdiccionalId,
+                    model.OrganoJurisdiccionalDescripcion,
                     model.OrdenCapturaCodigo,
                     model.NumeroOrdenCaptura,
                     model.Correlativo,
@@ -547,7 +549,7 @@ namespace Seje.OrdenCaptura.Api.Services
                     model.OrdenCapturaEstadoId = tipoFirma == (int)TipoFirmas.OrdenCaptura ? (int)OrdenCapturaEstados.PendienteDeEntrega : (int)OrdenCapturaEstados.ContraCaptura;
                     model.OrdenCapturaEstadoDescripcion = Enum.GetName(typeof(OrdenCapturaEstados), model.OrdenCapturaEstadoId);
                     var command = new CommandStack.Commands.ModificarOrdenCapturaCommand(model.OrdenCapturaId,
-                        model.OrganoJurisdiccionalId, model.OrdenCapturaCodigo,
+                        model.OrganoJurisdiccionalId,model.OrganoJurisdiccionalDescripcion, model.OrdenCapturaCodigo,
                         model.NumeroOrdenCaptura, model.Correlativo,
                         model.OrdenCapturaEstadoId, model.OrdenCapturaEstadoDescripcion,
                         model.ExpedienteId, model.NumeroExpediente,

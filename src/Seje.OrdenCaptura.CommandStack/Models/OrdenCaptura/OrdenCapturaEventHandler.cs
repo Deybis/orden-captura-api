@@ -11,6 +11,7 @@ namespace Seje.OrdenCaptura.CommandStack.Models
         {
             this.OrdenCapturaId = OrdenCapturaId;
             this.OrganoJurisdiccionalId = OrganoJurisdiccionalId;
+            this.OrganoJurisdiccionalDescripcion = OrganoJurisdiccionalDescripcion;
             this.OrdenCapturaCodigo = OrdenCapturaCodigo;
             this.NumeroOrdenCaptura = NumeroOrdenCaptura;
             this.Correlativo = Correlativo;
@@ -35,6 +36,7 @@ namespace Seje.OrdenCaptura.CommandStack.Models
         {
             this.OrdenCapturaId = OrdenCapturaId;
             this.OrganoJurisdiccionalId = OrganoJurisdiccionalId;
+            this.OrganoJurisdiccionalDescripcion = OrganoJurisdiccionalDescripcion;
             this.OrdenCapturaCodigo = OrdenCapturaCodigo;
             this.NumeroOrdenCaptura = NumeroOrdenCaptura;
             this.Correlativo = Correlativo;

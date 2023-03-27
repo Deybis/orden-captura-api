@@ -8,6 +8,7 @@ namespace Seje.OrdenCaptura.CommandStack.Models
     {
         public long OrdenCapturaId { get; set; }
         public int OrganoJurisdiccionalId { get; set; }
+        public string OrganoJurisdiccionalDescripcion { get; set; }
         public Guid OrdenCapturaCodigo { get; set; }
         public string NumeroOrdenCaptura { get; set; }
         public int Correlativo { get; set; }

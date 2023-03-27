@@ -2,10 +2,6 @@
 using MementoFX.Persistence;
 using Seje.OrdenCaptura.CommandStack.Commands;
 using Seje.OrdenCaptura.SharedKernel.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,6 +22,7 @@ namespace Seje.OrdenCaptura.CommandStack.Sagas
             var model = Models.OrdenCaptura.Factory.Create(
                 request.OrdenCapturaId,
                 request.OrganoJurisdiccionalId,
+                request.OrganoJurisdiccionalDescripcion,
                 request.OrdenCapturaCodigo,
                 request.NumeroOrdenCaptura,
                 request.Correlativo,
@@ -54,6 +51,7 @@ namespace Seje.OrdenCaptura.CommandStack.Sagas
             var model = Models.OrdenCaptura.Factory.Modify(
                 request.OrdenCapturaId,
                 request.OrganoJurisdiccionalId,
+                request.OrganoJurisdiccionalDescripcion,
                 request.OrdenCapturaCodigo,
                 request.NumeroOrdenCaptura,
                 request.Correlativo,

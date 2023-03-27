@@ -15,7 +15,9 @@ namespace Seje.OrdenCaptura.QueryStack
 
         [Required]
         public int OrganoJurisdiccionalId { get; set; }
-        
+
+        public string OrganoJurisdiccionalDescripcion { get; set; }
+
         [Required]
         public Guid OrdenCapturaCodigo { get; set; }
 

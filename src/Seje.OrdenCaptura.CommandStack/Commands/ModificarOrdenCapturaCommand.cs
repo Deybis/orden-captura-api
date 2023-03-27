@@ -8,6 +8,7 @@ namespace Seje.OrdenCaptura.CommandStack.Commands
     {
         public long OrdenCapturaId { get; set; }
         public int OrganoJurisdiccionalId { get; set; }
+        public string OrganoJurisdiccionalDescripcion { get; set; }
         public Guid OrdenCapturaCodigo { get; set; }
         public string NumeroOrdenCaptura { get; set; }
         public int Correlativo { get; set; }
@@ -32,6 +33,7 @@ namespace Seje.OrdenCaptura.CommandStack.Commands
         public ModificarOrdenCapturaCommand(
             long OrdenCapturaId,
             int OrganoJurisdiccionalId,
+            string OrganoJurisdiccionalDescripcion,
             Guid OrdenCapturaCodigo,
             string NumeroOrdenCaptura,
             int Correlativo,
@@ -57,6 +59,7 @@ namespace Seje.OrdenCaptura.CommandStack.Commands
         {
             this.OrdenCapturaId = OrdenCapturaId;
             this.OrganoJurisdiccionalId = OrganoJurisdiccionalId;
+            this.OrganoJurisdiccionalDescripcion = OrganoJurisdiccionalDescripcion;
             this.OrdenCapturaCodigo = OrdenCapturaCodigo;
             this.NumeroOrdenCaptura = NumeroOrdenCaptura;
             this.Correlativo = Correlativo;

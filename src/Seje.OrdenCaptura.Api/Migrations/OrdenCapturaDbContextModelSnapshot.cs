@@ -372,6 +372,9 @@ namespace Seje.OrdenCaptura.Api.Migrations
                     b.Property<int>("OrdenCapturaEstadoId")
                         .HasColumnType("int");
 
+                    b.Property<string>("OrganoJurisdiccionalDescripcion")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("OrganoJurisdiccionalId")
                         .HasColumnType("int");
 

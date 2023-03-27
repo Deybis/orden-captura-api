@@ -9,6 +9,7 @@ namespace Seje.OrdenCaptura.CommandStack.Models
             public static OrdenCaptura Create(
                 long OrdenCapturaId,
                 int OrganoJurisdiccionalId,
+                string OrganoJurisdiccionalDescripcion,
                 Guid OrdenCapturaCodigo,
                 string NumeroOrdenCaptura,
                 int Correlativo,
@@ -32,6 +33,7 @@ namespace Seje.OrdenCaptura.CommandStack.Models
                 var @event = new Events.OrdenCapturaRegistradaEvent(
                     OrdenCapturaId,
                     OrganoJurisdiccionalId,
+                    OrganoJurisdiccionalDescripcion,
                     OrdenCapturaCodigo,
                     NumeroOrdenCaptura,
                     Correlativo,
@@ -60,6 +62,7 @@ namespace Seje.OrdenCaptura.CommandStack.Models
             public static OrdenCaptura Modify(
                 long OrdenCapturaId,
                 int OrganoJurisdiccionalId,
+                string OrganoJurisdiccionalDescripcion,
                 Guid OrdenCapturaCodigo,
                 string NumeroOrdenCaptura,
                 int Correlativo,
@@ -85,6 +88,7 @@ namespace Seje.OrdenCaptura.CommandStack.Models
                 var @event = new Events.OrdenCapturaModificadaEvent(
                     OrdenCapturaId,
                     OrganoJurisdiccionalId,
+                    OrganoJurisdiccionalDescripcion,
                     OrdenCapturaCodigo,
                     NumeroOrdenCaptura,
                     Correlativo,

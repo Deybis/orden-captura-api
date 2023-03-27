@@ -10,7 +10,7 @@ using Seje.OrdenCaptura.QueryStack;
 namespace Seje.OrdenCaptura.Api.Migrations
 {
     [DbContext(typeof(OrdenCapturaDbContext))]
-    [Migration("20230325133946_InitialMigration")]
+    [Migration("20230327202606_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -373,6 +373,9 @@ namespace Seje.OrdenCaptura.Api.Migrations
 
                     b.Property<int>("OrdenCapturaEstadoId")
                         .HasColumnType("int");
+
+                    b.Property<string>("OrganoJurisdiccionalDescripcion")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OrganoJurisdiccionalId")
                         .HasColumnType("int");

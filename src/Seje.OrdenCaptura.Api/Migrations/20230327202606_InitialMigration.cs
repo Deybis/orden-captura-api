@@ -174,6 +174,7 @@ namespace Seje.OrdenCaptura.Api.Migrations
                     OrdenCapturaId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrganoJurisdiccionalId = table.Column<int>(type: "int", nullable: false),
+                    OrganoJurisdiccionalDescripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OrdenCapturaCodigo = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     NumeroOrdenCaptura = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Correlativo = table.Column<int>(type: "int", nullable: false),
