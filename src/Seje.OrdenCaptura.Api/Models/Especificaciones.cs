@@ -124,6 +124,9 @@ namespace Seje.OrdenCaptura.Api.Models
     {
         public ParteSpec(FiltrosParte filtro)
         {
+            if (filtro.ParteId > 0)
+                Query.Where(x => x.ParteId == filtro.ParteId);
+
             if (!string.IsNullOrWhiteSpace(filtro.Nombre))
                 Query.Where(x => x.Nombre == filtro.Nombre);
 
