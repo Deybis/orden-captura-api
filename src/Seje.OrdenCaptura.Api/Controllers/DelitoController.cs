@@ -54,7 +54,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPost("create")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<Delito>), (int)HttpStatusCode.OK)]
         public async Task<Result<Delito>> Create(RegistrarDelito delito)
         {
             var result = new Result<Delito>(true, null, new Delito());
@@ -66,7 +66,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPut("update")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<Delito>), (int)HttpStatusCode.OK)]
         public async Task<Result<Delito>> Update(ActualizarDelito delito)
         {
             var result = new Result<Delito>(true, null, new Delito());
@@ -78,7 +78,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpDelete("delete")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<Delito>), (int)HttpStatusCode.OK)]
         public async Task<Result<Delito>> Delete(long id)
         {
             var result = await _delitoService.Delete(id, UserName);

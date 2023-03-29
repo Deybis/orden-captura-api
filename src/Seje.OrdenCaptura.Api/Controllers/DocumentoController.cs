@@ -27,7 +27,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("list")]
-        [ProducesResponseType(typeof(Documento), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<List<Documento>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<List<Documento>>> List()
@@ -36,7 +36,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("{documentoId}")]
-        [ProducesResponseType(typeof(Documento), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<Documento>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<Documento>> GetById(long documentoId)
@@ -45,7 +45,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("byfilter")]
-        [ProducesResponseType(typeof(Documento), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<List<Documento>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<List<Documento>>> GetByFilter([FromQuery] FiltrosDocumento filtros)
@@ -54,7 +54,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPost("create")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<List<RegistrarDocumento>>), (int)HttpStatusCode.OK)]
         public async Task<Result<List<RegistrarDocumento>>> Create(List<RegistrarDocumento> files)
         {
             var result = new Result<List<RegistrarDocumento>>(false, null, new List<RegistrarDocumento>());
@@ -66,7 +66,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPut("update")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<Documento>), (int)HttpStatusCode.OK)]
         public async Task<Result<Documento>> Update(Documento documento)
         {
             var result = new Result<Documento>(true, null, new Documento());
@@ -78,7 +78,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpDelete("delete")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<Documento>), (int)HttpStatusCode.OK)]
         public async Task<Result<Documento>> Delete(long id)
         {
             var result = await _documentoService.Delete(id, UserName);

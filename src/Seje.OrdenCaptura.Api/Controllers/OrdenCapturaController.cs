@@ -28,7 +28,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("list")]
-        [ProducesResponseType(typeof(OrdenCaptura), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<List<OrdenCaptura>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<List<OrdenCaptura>>> List()
@@ -37,7 +37,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("paginatedlist")]
-        [ProducesResponseType(typeof(OrdenCaptura), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(PagedResult<OrdenCaptura>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<PagedResult<OrdenCaptura>> List([FromQuery] FiltrosOrdenCaptura filtros)
@@ -46,7 +46,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("{ordenCapturaId}")]
-        [ProducesResponseType(typeof(OrdenCaptura), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<OrdenCaptura>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<OrdenCaptura>> GetById(long ordenCapturaId)
@@ -55,7 +55,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("byfilter")]
-        [ProducesResponseType(typeof(OrdenCaptura), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<List<OrdenCaptura>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<List<OrdenCaptura>>> GetByFilter([FromQuery] FiltrosOrdenCaptura filtros)
@@ -64,7 +64,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPost("create")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<OrdenCaptura>), (int)HttpStatusCode.OK)]
         public async Task<Result<OrdenCaptura>> Create(RegistrarOrdenCaptura ordenCaptura)
         {
             var result = new Result<OrdenCaptura>(true, null, new OrdenCaptura());
@@ -76,7 +76,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPut("update")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<OrdenCaptura>), (int)HttpStatusCode.OK)]
         public async Task<Result<OrdenCaptura>> Update(ActualizarOrdenCaptura ordenCaptura)
         {
             var result = new Result<OrdenCaptura>(true, null, new OrdenCaptura());
@@ -88,7 +88,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPost("registrarfirmas")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<List<Firma>>), (int)HttpStatusCode.OK)]
         public async Task<Result<List<Firma>>> RegistrarFirmas(AgregarFirmas model)
         {
             var result = new Result<List<Firma>>(false, null, new List<Firma>());
@@ -100,7 +100,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPost("registrarpartes")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<OrdenCapturaParte>), (int)HttpStatusCode.OK)]
         public async Task<Result<OrdenCapturaParte>> RegistrarPartes(OrdenCapturaParte model)
         {
             var result = new Result<OrdenCapturaParte>(false, null, new OrdenCapturaParte());
@@ -112,7 +112,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPost("firmar")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<FirmaResponse>), (int)HttpStatusCode.OK)]
         public async Task<Result<FirmaResponse>> Firmar(FirmaRequest request)
         {
             var result = new Result<FirmaResponse>(false, null, new FirmaResponse());

@@ -27,7 +27,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("list")]
-        [ProducesResponseType(typeof(Firmante), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<List<Firmante>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<List<Firmante>>> List()
@@ -36,7 +36,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("{firmanteId}")]
-        [ProducesResponseType(typeof(Firmante), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<Firmante>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<Firmante>> GetById(int firmanteId)
@@ -45,7 +45,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("byfilter")]
-        [ProducesResponseType(typeof(Firmante), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<List<Firmante>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<List<Firmante>>> GetByFilter([FromQuery] FiltrosFirmante filtros)
@@ -54,7 +54,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPost("create")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<Firmante>), (int)HttpStatusCode.OK)]
         public async Task<Result<Firmante>> Create(Firmante firma)
         {
             var result = new Result<Firmante>(true, null, new Firmante());
@@ -66,7 +66,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPut("update")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<Firmante>), (int)HttpStatusCode.OK)]
         public async Task<Result<Firmante>> Update(Firmante firma)
         {
             var result = new Result<Firmante>(true, null, new Firmante());
@@ -78,7 +78,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpDelete("delete")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<Firmante>), (int)HttpStatusCode.OK)]
         public async Task<Result<Firmante>> Delete(int id)
         {
             var result = await _firmanteService.Delete(id, UserName);

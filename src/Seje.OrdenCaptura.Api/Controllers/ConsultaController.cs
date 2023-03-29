@@ -36,7 +36,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         //}
 
         [HttpGet("estadisticas")]
-        [ProducesResponseType(typeof(Expediente), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<Models.Estadistica>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<Models.Estadistica>> GetEstadisticas([FromQuery] FiltrosEstadistica filtros)
@@ -45,7 +45,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("ordencaptura")]
-        [ProducesResponseType(typeof(Expediente), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<List<OrdenCaptura>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<List<OrdenCaptura>>> ConsultaOrdenCaptura([FromQuery] FiltrosConsultaOrdenCaptura filtros)

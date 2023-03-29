@@ -26,7 +26,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("list")]
-        [ProducesResponseType(typeof(OrdenCapturaEstado), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<List<OrdenCapturaEstado>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<List<OrdenCapturaEstado>>> List()
@@ -35,7 +35,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("{ordenCapturaEstadoId}")]
-        [ProducesResponseType(typeof(OrdenCapturaEstado), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<OrdenCapturaEstado>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<OrdenCapturaEstado>> GetById(long ordenCapturaEstadoId)
@@ -44,7 +44,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("byfilter")]
-        [ProducesResponseType(typeof(OrdenCapturaEstado), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<List<OrdenCapturaEstado>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<List<OrdenCapturaEstado>>> GetByFilter([FromQuery] FiltrosOrdenCapturaEstado filtros)
@@ -53,7 +53,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPost("create")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<OrdenCapturaEstado>), (int)HttpStatusCode.OK)]
         public async Task<Result<OrdenCapturaEstado>> Create(OrdenCapturaEstado estado)
         {
             var result = new Result<OrdenCapturaEstado>(false, null, new OrdenCapturaEstado());
@@ -65,7 +65,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPut("update")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<OrdenCapturaEstado>), (int)HttpStatusCode.OK)]
         public async Task<Result<OrdenCapturaEstado>> Update(OrdenCapturaEstado estado)
         {
             var result = new Result<OrdenCapturaEstado>(false, null, new OrdenCapturaEstado());
@@ -77,7 +77,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpDelete("delete")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<OrdenCapturaEstado>), (int)HttpStatusCode.OK)]
         public async Task<Result<OrdenCapturaEstado>> Delete(long id)
         {
             var result = await _ordenCapturaEstadoService.Delete(id, UserName);

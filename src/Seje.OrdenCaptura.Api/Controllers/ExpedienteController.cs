@@ -28,7 +28,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("list")]
-        [ProducesResponseType(typeof(Expediente), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<List<Expediente>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<List<Expediente>>> List()
@@ -37,7 +37,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("paginatedlist")]
-        [ProducesResponseType(typeof(Expediente), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(PagedResult<Expediente>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<PagedResult<Expediente>> List([FromQuery] FiltrosExpediente filtros)
@@ -46,7 +46,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("{expedienteId}")]
-        [ProducesResponseType(typeof(OrdenCaptura), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<Expediente>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<Expediente>> GetById(long expedienteId)
@@ -55,7 +55,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpGet("byfilter")]
-        [ProducesResponseType(typeof(Expediente), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result<List<Expediente>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         public async Task<Result<List<Expediente>>> GetByFilter([FromQuery] FiltrosExpediente filtros)
@@ -64,7 +64,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPost("create")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<RegistrarExpediente>), (int)HttpStatusCode.OK)]
         public async Task<Result<RegistrarExpediente>> Create(RegistrarExpediente expediente)
         {
             var result = new Result<RegistrarExpediente>(true, null, new RegistrarExpediente());
@@ -76,7 +76,7 @@ namespace Seje.OrdenCaptura.Api.Controllers
         }
 
         [HttpPut("update")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Result<ActualizarExpediente>), (int)HttpStatusCode.OK)]
         public async Task<Result<ActualizarExpediente>> Update(ActualizarExpediente expediente)
         {
             var result = new Result<ActualizarExpediente>(true, null, new ActualizarExpediente());
