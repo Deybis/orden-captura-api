@@ -1,7 +1,9 @@
+using IdentityModel;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace Seje.OrdenCaptura.Api
 {
@@ -9,6 +11,9 @@ namespace Seje.OrdenCaptura.Api
     {
         public static void Main(string[] args)
         {
+            //var secretKey = Guid.NewGuid().ToString();
+            //var secretHash = secretKey.ToSha256();
+
             CreateWebHostBuilder(args).Build().Run();
         }
 
