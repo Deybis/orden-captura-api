@@ -26,15 +26,6 @@ namespace Seje.OrdenCaptura.Api.Controllers
             _consultaService = consultaService;
         }
 
-        //[HttpGet("expediente/{numeroExpediente}")]
-        //[ProducesResponseType(typeof(Expediente), (int)HttpStatusCode.OK)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        //[ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
-        //public async Task<Result<Seje.Expediente.Client.Models.Expediente>> GetExpediente(string numeroExpediente)
-        //{
-        //    return await _consultaService.GetExpediente(numeroExpediente);
-        //}
-
         [HttpGet("estadisticas")]
         [ProducesResponseType(typeof(Result<Models.Estadistica>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]

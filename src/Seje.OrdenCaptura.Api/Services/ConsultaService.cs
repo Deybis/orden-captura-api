@@ -70,6 +70,8 @@ namespace Seje.OrdenCaptura.Api.Services
                     NombreImputado = filtros.Campo == "nombre" ? filtros.Valor : string.Empty
                 }));
 
+                ordenesCaptura = ordenesCaptura.Where(x => x.OrdenCapturaEstadoId == (int)OrdenCapturaEstados.Activa || x.OrdenCapturaEstadoId == (int)OrdenCapturaEstados.Ejecutada).ToList();
+
                 result.Entity = _mapper.Map<List<OrdenCaptura>>(ordenesCaptura);
                 result.Success = true;
                 return result;
